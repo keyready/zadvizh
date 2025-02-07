@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+	.bg-main-gradient {
+		background: linear-gradient(161deg, rgba(34,145,195,0.6867121848739496) 0%, rgba(253,160,45,0.30575980392156865) 100%);
+	}
+}
+
+* {
+	font-family: 'Roboto', sans-serif;
+}
+
+body {
+	width: 100%;
+	height: 100vh;
+	overflow: hidden;
+}
