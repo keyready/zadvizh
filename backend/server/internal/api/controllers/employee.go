@@ -16,22 +16,6 @@ func NewEmployeeControllers(employeeUsecase usecases.EmployeeUsecase) *EmployeeC
 	return &EmployeeControllers{employeeUsecase: employeeUsecase}
 }
 
-func (eCont *EmployeeControllers) VerifyInviteLink(ctx *gin.Context) {
-	inviteLink := ctx.Query("ref")
-	if inviteLink == "" {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Ошибка распознавания ссылки"})
-		return
-	}
-
-	httpCode, contrErr := eCont.employeeUsecase.VerifyInviteLink(inviteLink)
-	if contrErr != nil {
-		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": contrErr.Error()})
-		return
-	}
-
-	ctx.JSON(httpCode, gin.H{})
-}
-
 func (eCont *EmployeeControllers) GetAllEmployers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
 }

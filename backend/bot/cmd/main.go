@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bot/utils"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -22,49 +22,42 @@ func main() {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
+		if update.Message == nil {
+			log.Print("Обновление произошло без сообщения")
+			continue
+		}
 
-		if update.ChatMember != nil && update.ChatMember.NewChatMember.Status == "member" {
+		if len(update.Message.NewChatMembers) > 0 {
+			newMember := update.Message.NewChatMembers[0]
 
-			handleNewMember(bot, update.ChatMember)
+			welcomeMessage := fmt.Sprintf("Добро пожаловать, %s! 🙌", newMember.UserName)
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, welcomeMessage)
+
+			_, sendErr := bot.Send(msg)
+			if sendErr != nil {
+				log.Fatalf("Ошибка отправления приветственного сообщения: %s", sendErr.Error())
+			}
 		}
 
 		if update.Message.IsCommand() {
 			switch update.Message.Command() {
 			case "invite":
 				authorLink := update.Message.From.ID
-				inviteLink := utils.GenerateInviteLink(authorLink)
+				inviteLink := os.Getenv("LINK_TEMPLATE") + strconv.FormatInt(authorLink, 10)
 
-				msgTemplate := fmt.Sprintf("Твоя ссылка на вступление: %s", inviteLink)
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgTemplate)
+				msgBody := fmt.Sprintf("Ссылка на вступление: %s", inviteLink)
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgBody)
 
 				_, err := bot.Send(msg)
 				if err != nil {
 					log.Fatalf("Ошибка выполнения команды /invite: %s", err.Error())
 				}
+
+				log.Print("Ссылка приглашение успешно сгенерирована")
+			default:
+				log.Printf("Неизвестная команда: %s", update.Message.Command())
 			}
 		}
-	}
-}
 
-func handleNewMember(bot *tgbotapi.BotAPI, chatMember *tgbotapi.ChatMemberUpdated) {
-	// Извлекаем информацию о новом пользователе
-	user := chatMember.NewChatMember.User
-
-	// Формируем приветственное сообщение
-	var welcomeMessage string
-	if user.UserName != "" {
-		welcomeMessage = fmt.Sprintf("Приветствуем вас, @%s!", user.UserName)
-	} else {
-		welcomeMessage = fmt.Sprintf("Приветствуем вас, %s %s!", user.FirstName, user.LastName)
-		if user.LastName == "" {
-			welcomeMessage = fmt.Sprintf("Приветствуем вас, %s!", user.FirstName)
-		}
-	}
-
-	// Отправляем приветственное сообщение в канал
-	msg := tgbotapi.NewMessage(chatMember.Chat.ID, welcomeMessage)
-	_, err := bot.Send(msg)
-	if err != nil {
-		log.Printf("Ошибка отправки сообщения: %s", err.Error())
 	}
 }
