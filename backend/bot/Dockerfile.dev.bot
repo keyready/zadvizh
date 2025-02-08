@@ -2,6 +2,8 @@ FROM golang:1.23-alpine AS builder
 
 ENV BOT_TOKEN=7950443390:AAFaHXb6prhYCBFXpiLEXdKAav9dz4GrGrk
 ENV LINK_TEMPLATE=http://localhost:5000/?ref=Z@6v1ZH_invite_link_
+ENV MONGO_URI=mongodb://admin:admin@mongodb:27017/
+ENV MONGO_APP_NAME=zadvizh
 
 WORKDIR /app
 

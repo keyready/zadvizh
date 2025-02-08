@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bot/botdb"
+	"context"
+	"encoding/base64"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -9,6 +12,8 @@ import (
 )
 
 func main() {
+	mongoClient, _ := botdb.GetMongoClient()
+
 	bot, botInitErr := tgbotapi.NewBotAPI(os.Getenv("BOT_TOKEN"))
 	if botInitErr != nil {
 		log.Fatalf("Ошибка инициализации бота: %s", botInitErr.Error())
@@ -28,6 +33,18 @@ func main() {
 		}
 
 		if len(update.Message.NewChatMembers) > 0 {
+			authorRefTgId := strconv.FormatInt(update.Message.From.ID, 64)
+			newMemberTgId := strconv.FormatInt(update.Message.NewChatMembers[0].ID, 64)
+
+			mongoClient.Database(os.Getenv("MONGO_APP_NAME")).
+				Collection("employees").
+				InsertOne(context.Background(),
+					botdb.Employee{
+						TgId: newMemberTgId,
+						Ref:  authorRefTgId,
+					},
+				)
+
 			newMember := update.Message.NewChatMembers[0]
 
 			welcomeMessage := fmt.Sprintf("Добро пожаловать, %s! 🙌", newMember.UserName)
@@ -43,7 +60,8 @@ func main() {
 			switch update.Message.Command() {
 			case "invite":
 				authorLink := update.Message.From.ID
-				inviteLink := os.Getenv("LINK_TEMPLATE") + strconv.FormatInt(authorLink, 10)
+				authorLinkB64 := base64.StdEncoding.EncodeToString([]byte(strconv.FormatInt(authorLink, 10)))
+				inviteLink := os.Getenv("LINK_TEMPLATE") + authorLinkB64
 
 				msgBody := fmt.Sprintf("Ссылка на вступление: %s", inviteLink)
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgBody)

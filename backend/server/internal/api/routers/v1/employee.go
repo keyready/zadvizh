@@ -11,4 +11,5 @@ func NewEmployeeRouters(eContr *controllers.EmployeeControllers, router *gin.Eng
 	employeeRouters.GET("", eContr.GetAllEmployers)
 
 	router.POST("/api/v1/auth", eContr.AuthEmployee)
+	router.GET("/", eContr.VerifyLink)
 }

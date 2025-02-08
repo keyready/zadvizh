@@ -16,8 +16,26 @@ func NewEmployeeControllers(employeeUsecase usecases.EmployeeUsecase) *EmployeeC
 	return &EmployeeControllers{employeeUsecase: employeeUsecase}
 }
 
-func (eCont *EmployeeControllers) GetAllEmployers(ctx *gin.Context) {
+func (eCont *EmployeeControllers) VerifyLink(ctx *gin.Context) {
+	ref := ctx.Query("ref")
+
+	httpCode, contrErr := eCont.employeeUsecase.VerifyLink(ref)
+	if contrErr != nil {
+		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": fmt.Sprintf("Ошибка валидации ссылки: %s", contrErr.Error())})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (eCont *EmployeeControllers) GetAllEmployers(ctx *gin.Context) {
+	httpCode, contrErr, three := eCont.employeeUsecase.GetAllEmployers()
+	if contrErr != nil {
+		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": contrErr.Error()})
+		return
+	}
+
+	ctx.JSON(httpCode, gin.H{"three": three})
 }
 
 func (eCont *EmployeeControllers) AuthEmployee(ctx *gin.Context) {

@@ -12,5 +12,6 @@ type Employee struct {
 	TeamRole   string             `bson:"teamRole" json:"teamRole"`
 	Scidir     string             `bson:"scidir" json:"scidir"`
 
-	Ref string `bson:"ref" json:"ref"`
+	TgId string `bson:"tgid" json:"tgid"`
+	Ref  string `bson:"ref" json:"ref"`
 }
