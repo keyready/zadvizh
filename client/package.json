@@ -19,6 +19,7 @@
         "@heroui/system": "^2.4.7",
         "@heroui/theme": "^2.4.6",
         "@telegram-auth/react": "^1.0.4",
+        "@xyflow/react": "^12.4.2",
         "axios": "^1.7.9",
         "framer-motion": "^12.4.1",
         "react": "^19.0.0",

@@ -1,8 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
 import { BrowserRouter } from 'react-router';
 import { HeroUIProvider } from '@heroui/system';
+
+import App from './App.tsx';
 
 import './app/styles/index.scss';
 
