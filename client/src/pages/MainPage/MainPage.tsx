@@ -18,7 +18,7 @@ export const MainPage = () => {
                 <h3 className="text-center text-xl text-black dark:text-white">
                     Для получения доступа к чату, авторизуйтесь через Telegram
                 </h3>
-                <LoginButton botUsername='@zadvizh_assistant_bot' />
+                <LoginButton botUsername='zadvizh_assistant_bot' />
                 {/*<button*/}
                 {/*    onClick={() => navigate(`/auth/continue?ref=${ref}`)}*/}
                 {/*    className="mt-10 rounded-lg bg-[#00a8e8] px-4 py-2 text-white duration-200 hover:scale-105"*/}
