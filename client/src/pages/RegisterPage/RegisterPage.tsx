@@ -16,7 +16,7 @@ interface User {
     teamRole?: string;
     position?: string;
     ref?: string;
-    username: string;
+    tgId: string;
     scidir: string;
 }
 
@@ -35,7 +35,7 @@ export const RegisterPage = () => {
         setNewUserForm((ps) => ({
             ...ps,
             ref,
-            username: userId
+            tgId: userId
         }));
     }, [ref, userId]);
 
