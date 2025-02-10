@@ -1,10 +1,10 @@
-import {useNavigate, useParams} from "react-router";
+// import {useNavigate, useParams} from "react-router";
 import {LoginButton} from "@telegram-auth/react";
 
 export const MainPage = () => {
-    const navigate = useNavigate();
-
-    const { ref } = useParams<{ ref: string }>();
+    // const navigate = useNavigate();
+    //
+    // const { ref } = useParams<{ ref: string }>();
 
     return (
         <section className="bg-main-gradient flex h-screen w-full items-center justify-center">
