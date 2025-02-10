@@ -1,5 +1,5 @@
-import {LoginButton} from "@telegram-auth/react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import { LoginButton } from '@telegram-auth/react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const MainPage = () => {
     const navigate = useNavigate();
@@ -8,18 +8,18 @@ export const MainPage = () => {
     if (!params.get('ref')) {
         return (
             <section className="bg-main-gradient flex h-screen w-full items-center justify-center">
-                <div className="min-w-1/3 min-h-64 flex flex-col justify-center items-center rounded-xl bg-primary p-4">
+                <div className="min-w-1/3 flex min-h-64 flex-col items-center justify-center rounded-xl bg-primary p-4">
                     <h1 className="text-center text-3xl font-bold text-black dark:text-white">
                         Без приглашения сюда не попасть :(
                     </h1>
                 </div>
             </section>
-        )
+        );
     }
 
     return (
         <section className="bg-main-gradient flex h-screen w-full items-center justify-center">
-            <div className="min-w-1/3 min-h-64 flex flex-col items-center rounded-xl bg-primary p-4">
+            <div className="min-w-1/3 flex min-h-64 flex-col items-center rounded-xl bg-primary p-4">
                 <h1 className="text-center text-3xl font-bold text-black dark:text-white">
                     Добро пожаловать в Движ
                 </h1>
@@ -33,7 +33,7 @@ export const MainPage = () => {
                     cornerRadius={10}
                     onAuthCallback={(data) => {
                         console.log(data);
-                        navigate(`/auth/continue?ref=${params.get("ref") || ""}&un=${data.id}`);
+                        navigate(`/auth/continue?ref=${params.get('ref') || ''}&un=${data.id}`);
                     }}
                     botUsername={import.meta.env.VITE_BOT_USERNAME}
                 />

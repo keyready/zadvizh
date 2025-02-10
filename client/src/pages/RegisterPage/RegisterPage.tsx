@@ -23,8 +23,8 @@ interface User {
 export const RegisterPage = () => {
     const [params] = useSearchParams();
 
-    const ref = useMemo<string>(() => params.get('ref') || '', [])
-    const userId = useMemo<string>(() => params.get('un') || '', [])
+    const ref = useMemo<string>(() => params.get('ref') || '', []);
+    const userId = useMemo<string>(() => params.get('un') || '', []);
 
     const [step, setStep] = useState<number>(1);
     const [newUserForm, setNewUserForm] = useState<Partial<User>>({});
@@ -35,7 +35,7 @@ export const RegisterPage = () => {
         setNewUserForm((ps) => ({
             ...ps,
             ref,
-            tgId: userId
+            tgId: userId,
         }));
     }, [ref, userId]);
 
@@ -68,7 +68,11 @@ export const RegisterPage = () => {
                     });
 
                     if (result.ok) {
-                        window.location.href = import.meta.env.VITE_ZADVIZH_LINK;
+                        window.open(
+                            import.meta.env.VITE_ZADVIZH_LINK,
+                            '_blank',
+                            'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
+                        );
                     }
                 } catch (e) {
                     alert(e);
@@ -304,7 +308,7 @@ export const RegisterPage = () => {
     ]);
 
     if (!ref || !userId) {
-        return <Navigate to={'/'} />
+        return <Navigate to={'/'} />;
     }
 
     return (
