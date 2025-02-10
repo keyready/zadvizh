@@ -1,10 +1,9 @@
-// import {useNavigate, useParams} from "react-router";
 import {LoginButton} from "@telegram-auth/react";
+import {useNavigate, useParams} from "react-router";
 
 export const MainPage = () => {
-    // const navigate = useNavigate();
-    //
-    // const { ref } = useParams<{ ref: string }>();
+    const navigate = useNavigate();
+    const { ref } = useParams<{ ref: string }>();
 
     return (
         <section className="bg-main-gradient flex h-screen w-full items-center justify-center">
@@ -18,13 +17,11 @@ export const MainPage = () => {
                 <h3 className="text-center text-xl text-black dark:text-white">
                     Для получения доступа к чату, авторизуйтесь через Telegram
                 </h3>
-                <LoginButton botUsername='zadvizh_assistant_bot' />
-                {/*<button*/}
-                {/*    onClick={() => navigate(`/auth/continue?ref=${ref}`)}*/}
-                {/*    className="mt-10 rounded-lg bg-[#00a8e8] px-4 py-2 text-white duration-200 hover:scale-105"*/}
-                {/*>*/}
-                {/*    Войти через Telegram*/}
-                {/*</button>*/}
+                <LoginButton
+                    cornerRadius={10}
+                    onAuthCallback={() => navigate(`/auth/continue?ref=${ref}`)}
+                    botUsername='zadvizh_assistant_bot'
+                />
             </div>
         </section>
     );
