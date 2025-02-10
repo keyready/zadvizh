@@ -2,7 +2,8 @@ import {Input} from "@heroui/input";
 import {Button} from "@heroui/button";
 import {Progress, Radio, RadioGroup} from "@heroui/react";
 import {FormEvent, useCallback, useEffect, useMemo, useState} from "react";
-import {useParams} from "react-router";
+import {useSearchParams} from "react-router-dom";
+import {Navigate} from "react-router";
 
 type FieldType = 'dev' | 'sec' | 'devops' | 'science' | 'org';
 
@@ -15,11 +16,15 @@ interface User {
     teamRole?: string;
     position?: string;
     ref?: string;
+    username: string;
     scidir: string;
 }
 
 export const RegisterPage = () => {
-    const { ref } = useParams<{ ref: string }>();
+    const [params] = useSearchParams();
+
+    const ref = useMemo<string>(() => params.get('ref') || '', [])
+    const userId = useMemo<string>(() => params.get('un') || '', [])
 
     const [step, setStep] = useState<number>(1);
     const [newUserForm, setNewUserForm] = useState<Partial<User>>({});
@@ -30,8 +35,9 @@ export const RegisterPage = () => {
         setNewUserForm((ps) => ({
             ...ps,
             ref,
+            username: userId
         }));
-    }, [ref]);
+    }, [ref, userId]);
 
     const handleStepChange = useCallback(
         async (ev: FormEvent<HTMLFormElement>) => {
@@ -51,7 +57,6 @@ export const RegisterPage = () => {
 
             if (step < 4) setStep((ps) => ps + 1);
             if (step === 4) {
-                console.log('print');
                 setIsLoading(true);
                 try {
                     const result = await fetch('/api/v1/auth', {
@@ -279,7 +284,7 @@ export const RegisterPage = () => {
                     <div className="mb-3 mt-10 w-full">
                         <h1 className="text-center text-xl font-bold">Регистрация завершена!</h1>
                         <h3 className="text-center">
-                            Нажмите "Завершить", чтобы получить приглашение в группу
+                            Нажмите &quot;Завершить&quot;, чтобы получить приглашение в группу
                         </h3>
                     </div>
                 );
@@ -297,6 +302,10 @@ export const RegisterPage = () => {
         newUserForm.teamRole,
         step,
     ]);
+
+    if (!ref || !userId) {
+        return <Navigate to={'/'} />
+    }
 
     return (
         <section className="bg-main-gradient flex h-screen w-full items-center justify-center">

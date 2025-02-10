@@ -31,7 +31,10 @@ export const MainPage = () => {
                 </h3>
                 <LoginButton
                     cornerRadius={10}
-                    onAuthCallback={() => navigate(`/auth/continue?ref=${params.get('ref') || ''}`)}
+                    onAuthCallback={(data) => {
+                        console.log(data);
+                        navigate(`/auth/continue?ref=${params.get("ref") || ""}&un=${data.id}`);
+                    }}
                     botUsername={import.meta.env.VITE_BOT_USERNAME}
                 />
             </div>
