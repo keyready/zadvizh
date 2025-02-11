@@ -2,12 +2,12 @@ import { Background, type Edge, MiniMap, type Node, ReactFlow } from '@xyflow/re
 import '@xyflow/react/dist/style.css';
 import dagre from '@dagrejs/dagre';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, ModalContent } from '@heroui/react';
 
 import { RootGroup } from '../FlowNode/RootGroup.tsx';
 import { SubrootGroup } from '../FlowNode/SubrootGroup.tsx';
 
-import { rawData, transformData } from './lib/generateNodes.ts';
+import { rawData, SourceNodesMap, transformData } from './lib/generateNodes.ts';
+import { LeafDrawer } from './LeafDrawer.tsx';
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -22,7 +22,7 @@ const nodeTypes = {
 export const FlowTree = () => {
     const getLayoutedElements = useCallback(
         (nodes: Node[], edges: Edge[], direction = 'TB'): { nodes: Node[]; edges: Edge[] } => {
-            dagreGraph.setGraph({ rankdir: direction, nodesep: 200 });
+            dagreGraph.setGraph({ rankdir: direction, nodesep: 125 });
 
             nodes.forEach((node) => {
                 dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -72,21 +72,10 @@ export const FlowTree = () => {
         }
     }, []);
 
-    const [selectedNode, setSelectedNode] = useState<Node | undefined>(undefined);
+    const [selectedNode, setSelectedNode] = useState<SourceNodesMap | undefined>(undefined);
 
     const handleNodeClick = useCallback((_: any, node: Node) => {
-        setSelectedNode(node);
-    }, []);
-
-    const generateTeamRoleLabel = useCallback((teamRole: string) => {
-        switch (teamRole) {
-            case 'cap':
-                return 'Капитан';
-            case 'part':
-                return 'Участник';
-            default:
-                return '';
-        }
+        setSelectedNode(node as unknown as SourceNodesMap);
     }, []);
 
     return (
@@ -98,18 +87,10 @@ export const FlowTree = () => {
                 nodeTypes={nodeTypes}
             >
                 <Background />
-                <MiniMap />
+                <MiniMap bgColor="gray" maskColor="#444" />
             </ReactFlow>
 
-            <Modal isOpen={!!selectedNode} onClose={() => setSelectedNode(undefined)}>
-                <ModalContent className="flex flex-col items-center gap-2 p-4">
-                    <h1 className="text-2xl">{selectedNode?.data?.label as string}</h1>
-                    <h2 className="text-xl opacity-50">
-                        {generateTeamRoleLabel(selectedNode?.data?.teamRole as string)}
-                    </h2>
-                    <h2 className="text-xl opacity-50">{selectedNode?.data?.position as string}</h2>
-                </ModalContent>
-            </Modal>
+            <LeafDrawer selectedNode={selectedNode} setSelectedNode={setSelectedNode} />
         </div>
     );
 };

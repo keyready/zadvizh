@@ -1,14 +1,16 @@
 import { type Edge, type Node } from '@xyflow/react';
 
 interface NodeData {
-    label: string;
-    teamRole?: string;
-    position?: string;
+    'label': string;
+    'data-label'?: string;
+    'teamRole'?: string;
+    'position'?: string;
+    'children'?: SourceNodesMap[];
 }
 
 export interface SourceNodesMap {
     id: string;
-    data: any;
+    data: NodeData;
     children?: SourceNodesMap[];
     [key: string]: any;
 }
@@ -56,13 +58,13 @@ export function transformData(input: any) {
         nodes.push({
             id: currentNodeId.toString(),
             data: {
-                label: node.data.label,
                 ...node.data,
+                children: node.children,
             },
             position: { x: 0, y: 0 },
             style: {
-                border: getNodeColors(node.data['data-label']).border,
-                background: getNodeColors(node.data['data-label']).bg,
+                border: getNodeColors(node.data['data-label'] || '').border,
+                background: getNodeColors(node.data['data-label'] || '').bg,
                 borderRadius: '12px',
             },
             type,
@@ -75,7 +77,7 @@ export function transformData(input: any) {
                     id: `e${currentNodeId}${childNodeId}`,
                     source: currentNodeId.toString(),
                     target: childNodeId.toString(),
-                    type: 'bezier',
+                    type: 'default',
                     style: {
                         strokeWidth: 1,
                         stroke: '#95bf74',
@@ -144,7 +146,7 @@ export const rawData: SourceNodesMap[] = [
                                 ],
                             },
                             {
-                                id: 'dev-team-1',
+                                id: 'dev-team-2',
                                 data: { label: 'Konyhov&Co' },
                                 children: [
                                     { id: 'Konyhov&Co-1', data: { label: 'Коныхов В.С.' } },
