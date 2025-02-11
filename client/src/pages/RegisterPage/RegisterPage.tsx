@@ -1,9 +1,9 @@
-import {Input} from "@heroui/input";
-import {Button} from "@heroui/button";
-import {Progress, Radio, RadioGroup} from "@heroui/react";
-import {FormEvent, useCallback, useEffect, useMemo, useState} from "react";
-import {useSearchParams} from "react-router-dom";
-import {Navigate} from "react-router";
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
+import { Progress, Radio, RadioGroup } from '@heroui/react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 type FieldType = 'dev' | 'sec' | 'devops' | 'science' | 'org';
 
