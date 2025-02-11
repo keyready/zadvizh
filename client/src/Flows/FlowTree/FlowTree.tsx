@@ -45,7 +45,8 @@ export const FlowTree = () => {
         };
 
         setIsLoading(true);
-        getEmployers();
+        setIsLoading(false);
+        // getEmployers();
     }, []);
 
     const getLayoutedElements = useCallback(
@@ -81,7 +82,7 @@ export const FlowTree = () => {
         [],
     );
 
-    const { edges: formattedEdges, nodes: formattedNodes } = transformData(hierarchy || []);
+    const { edges: formattedEdges, nodes: formattedNodes } = transformData(rawData || []);
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
         formattedNodes,
         formattedEdges,
@@ -105,7 +106,7 @@ export const FlowTree = () => {
 
     useEffect(() => {
         setSearchResults(
-            treeSearch(rawData[0], (node: SourceNodesMap) =>
+            treeSearch(layoutedNodes[0], (node: SourceNodesMap) =>
                 node.data.label.toLowerCase().includes(searchValue.toLowerCase()),
             ),
         );
@@ -138,7 +139,13 @@ export const FlowTree = () => {
                 {searchResults?.length && (
                     <div>
                         {searchResults.map((sr) => (
-                            <p key={sr.id}>{sr.data.label}</p>
+                            <button
+                                type={'button'}
+                                onClick={() => handleNodeClick({}, sr)}
+                                key={sr.id}
+                            >
+                                {sr.data.label}
+                            </button>
                         ))}
                     </div>
                 )}
