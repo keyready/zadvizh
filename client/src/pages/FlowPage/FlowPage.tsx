@@ -1,11 +1,13 @@
+import { ReactFlowProvider } from '@xyflow/react';
+
 import { FlowTree } from '../../Flows/FlowTree/FlowTree.tsx';
 
 export const FlowPage = () => {
     return (
         <section>
-            <div>
+            <ReactFlowProvider>
                 <FlowTree />
-            </div>
+            </ReactFlowProvider>
         </section>
     );
 };

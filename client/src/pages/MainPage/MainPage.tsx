@@ -75,7 +75,7 @@ export const MainPage = () => {
             default: {
                 return (
                     <h3 className="mb-10 text-center text-xl text-black dark:text-white">
-                        Что-то сломалось... Повторите позже
+                        Что-то сломалось... Перезагрузите страницу или повторите позже
                     </h3>
                 );
             }
