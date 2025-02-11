@@ -85,7 +85,7 @@ export const MainPage = () => {
     if (isUserRegistered === 'unregistered' || params.get('error')) {
         return (
             <section className="bg-main-gradient flex h-screen w-full items-center justify-center">
-                <div className="flex min-h-64 min-w-[45%] flex-col items-center gap-3 rounded-xl bg-primary p-4">
+                <div className="flex min-h-64 min-w-[45%] flex-col items-center gap-3 rounded-xl bg-primary bg-opacity-40 p-4">
                     <h2 className="mt-10 text-center text-2xl font-bold text-black dark:text-white">
                         Увы!
                     </h2>
@@ -99,7 +99,7 @@ export const MainPage = () => {
     if (params.get('ref')) {
         return (
             <section className="bg-main-gradient relative flex h-screen w-full items-center justify-center">
-                <div className="flex min-h-64 min-w-[33%] flex-col items-center rounded-xl bg-primary p-4">
+                <div className="flex min-h-64 min-w-[33%] flex-col items-center rounded-xl bg-primary bg-opacity-40 p-4">
                     <h1 className="text-center text-3xl font-bold text-black dark:text-white">
                         Добро пожаловать в Движ
                     </h1>
@@ -131,7 +131,7 @@ export const MainPage = () => {
 
     return (
         <section className="bg-main-gradient relative flex h-screen w-full items-center justify-center">
-            <div className="flex min-h-64 min-w-[33%] flex-col items-center justify-center gap-4 rounded-xl bg-primary p-4">
+            <div className="flex min-h-64 min-w-[33%] flex-col items-center justify-center gap-4 rounded-xl bg-primary bg-opacity-40 p-4">
                 <h1 className="text-center text-2xl font-bold text-black dark:text-white">
                     Для продолжения работы <br /> авторизуйтесь
                 </h1>

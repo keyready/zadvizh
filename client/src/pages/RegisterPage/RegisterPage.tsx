@@ -313,7 +313,7 @@ export const RegisterPage = () => {
 
     return (
         <section className="bg-main-gradient flex h-screen w-full items-center justify-center">
-            <div className="min-h-1/3 flex w-1/3 flex-col items-center rounded-xl bg-primary p-4">
+            <div className="min-h-1/3 flex w-1/3 flex-col items-center rounded-xl bg-primary bg-opacity-40 p-4">
                 {step <= 3 && (
                     <>
                         <Progress color="success" className="max-w-md" value={step * (100 / 3)} />
