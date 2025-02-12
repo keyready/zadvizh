@@ -5,7 +5,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
-	"os"
 	"sync"
 	"time"
 )
@@ -21,8 +20,9 @@ func GetMongoClient() (*mongo.Client, error) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
+		mongoUri := "mongodb://admin:admin@mongodb:27017/zadvizh?ssl=false&authSource=admin"
 		clientOptions := options.Client().
-			ApplyURI(os.Getenv("MONGO_URI"))
+			ApplyURI(mongoUri)
 
 		clientInstance, clientErr = mongo.Connect(clientOptions)
 		if clientErr != nil {

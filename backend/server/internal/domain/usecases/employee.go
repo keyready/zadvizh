@@ -9,8 +9,6 @@ import (
 	"os"
 	"server/internal/domain/repositories"
 	"server/internal/domain/types/enum/field"
-	"server/internal/domain/types/enum/position/dev"
-	"server/internal/domain/types/enum/position/sec"
 	"server/internal/domain/types/models"
 	"server/internal/domain/types/request"
 	"server/internal/domain/types/response"
@@ -22,7 +20,6 @@ type EmployeeUsecase interface {
 	VerifyLink(ref string) (httpCode int, usecaseError error)
 	GetAllEmployers() (httpCode int, usecaseError error, three response.Node)
 	GetAccessToken(tgId string) (httpCode int, usecaseError error, token string)
-	GetAllPositions(field string) (httpCode int, usecaseError error, positions []string)
 }
 
 type EmployeeUsecaseImpl struct {
@@ -31,31 +28,6 @@ type EmployeeUsecaseImpl struct {
 
 func NewEmployeeUsecase(employeeRepo repositories.EmployeeRepository) *EmployeeUsecaseImpl {
 	return &EmployeeUsecaseImpl{employeeRepo: employeeRepo}
-}
-
-func (eUsecase *EmployeeUsecaseImpl) GetAllPositions(filed string) (httpCode int, usecaseError error, positions []string) {
-	switch filed {
-	case field.DEV:
-		positions = []string{
-			dev.ML,
-			dev.BACK,
-			dev.FRONT,
-			dev.DESIGN,
-		}
-	case field.SEC:
-		positions = []string{
-			sec.ADMIN,
-			sec.WEB,
-			sec.JOY,
-			sec.CRYPTO,
-			sec.FORENCIS,
-			sec.OSINT,
-			sec.PWN,
-			sec.STEGANO,
-		}
-	}
-
-	return http.StatusOK, nil, positions
 }
 
 func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, usecaseError error, token string) {

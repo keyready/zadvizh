@@ -1,9 +1,18 @@
 services:
+  bot:
+    build:
+      context: ./backend/bot
+      dockerfile: Dockerfile.bot.prod
+    container_name: bot
+    depends_on:
+      - mongodb
+      - server
+
   server:
-    container_name: zadvizh_server
     build:
       context: ./backend/server
-      dockerfile: Dockerfile.bot.dev.bot.dev.prod
+      dockerfile: Dockerfile.server.prod
+    container_name: server
     ports:
       - 5000:5000
     depends_on:
@@ -11,31 +20,25 @@ services:
 
   mongodb:
     image: mongo
-    container_name: zadvizh_mongodb
+    container_name: mongodb
     restart: always
     ports:
       - 27017:27017
-    args:
-      MONGO_INITDB_ROOT_USERNAME
-      MONGO_INITDB_ROOT_PASSWORD
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
 
   mongo-express:
-    image: mongo-express
+    image: mongo-express:latest
     container_name: mongo-express
     restart: always
     ports:
       - 8081:8081
-    args:
-      ME_CONFIG_MONGODB_ADMINUSERNAME
-      ME_CONFIG_MONGODB_ADMINPASSWORD
-      ME_CONFIG_MONGODB_URL
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${ME_CONFIG_MONGODB_ADMINUSERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${ME_CONFIG_MONGODB_ADMINPASSWORD}
-      ME_CONFIG_BASICAUTH: ${ME_CONFIG_BASICAUTH}
-      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_BASICAUTH: false
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongodb:27017/
     depends_on:
+      - server
       - mongodb

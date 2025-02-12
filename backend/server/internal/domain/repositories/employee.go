@@ -21,7 +21,6 @@ type EmployeeRepository interface {
 	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error)
 	GetAllEmployees() (httpCode int, repoError error, employees []models.Employee)
 	GetAllTeamNames(field string) (teamNames []string)
-	GetAllScidirs(field string) (scidirs []string)
 	VerifyLink(authorLinkTgId string) (verifyLink bool)
 	GetAccessToken(tgId string) (check bool)
 }
@@ -53,33 +52,6 @@ func (eRepo *EmployeeRepositoryImpl) VerifyLink(authorLinkTgId string) (verifyLi
 	}
 
 	return true
-}
-
-func (eRepo *EmployeeRepositoryImpl) GetAllScidirs(field string) (scidirs []string) {
-	prj := bson.M{
-		"scidir": 1,
-	}
-
-	cur, mongoErr := eRepo.mongoDB.Collection("employees").
-		Find(ctx, bson.D{{"field", field}}, options.Find().SetProjection(prj))
-	defer cur.Close(ctx)
-
-	if mongoErr != nil {
-		return nil
-	}
-
-	for cur.Next(ctx) {
-		var scidir bson.M
-		if decodeErr := cur.Decode(&scidir); decodeErr != nil {
-			return nil
-		}
-
-		if sd, exist := scidir["scidir"]; exist {
-			scidirs = append(scidirs, sd.(string))
-		}
-	}
-
-	return scidirs
 }
 
 func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []string) {

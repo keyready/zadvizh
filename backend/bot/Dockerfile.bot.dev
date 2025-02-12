@@ -1,8 +1,9 @@
 FROM golang:1.23-alpine AS builder
 
+ENV MONGO_URI=mongodb://admin:admin@mongodb:27017/zadvizh?ssl=false&authSource=admin
+ENV MONGODB=zadvizh
 ENV BOT_TOKEN=7950443390:AAFaHXb6prhYCBFXpiLEXdKAav9dz4GrGrk
-ENV LINK_TEMPLATE=https://zadvizh.vercel.app/?ref=link_
-ENV CHATID=-1002438510106
+ENV LINK_TEMPLATE=https://zadvizh.ri?ref=inviteLink_
 
 WORKDIR /app
 
