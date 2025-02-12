@@ -3,14 +3,15 @@ import '@xyflow/react/dist/style.css';
 import dagre from '@dagrejs/dagre';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Spinner } from '@heroui/react';
-import { Input } from '@heroui/input';
+import { useNavigate } from 'react-router-dom';
 
 import { RootGroup } from '../FlowNode/RootGroup.tsx';
 import { SubrootGroup } from '../FlowNode/SubrootGroup.tsx';
 
-import { rawData, SourceNodesMap, transformData } from './lib/generateNodes.ts';
+import { SourceNodesMap, transformData } from './lib/generateNodes.ts';
 import { LeafDrawer } from './LeafDrawer.tsx';
 import { treeSearch } from './lib/treeSearch.ts';
+import { FlowTreeSearchPanel } from './FlowTreeSearchPanel.tsx';
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
@@ -23,6 +24,8 @@ const nodeTypes = {
 };
 
 export const FlowTree = () => {
+    const navigate = useNavigate();
+
     const [hierarchy, setHierarchy] = useState<SourceNodesMap[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [searchValue, setSearchValue] = useState<string>('');
@@ -38,15 +41,14 @@ export const FlowTree = () => {
                 });
                 setHierarchy([await result.json()]);
             } catch (e) {
-                console.log(e);
+                navigate('/');
             } finally {
                 setIsLoading(false);
             }
         };
 
         setIsLoading(true);
-        setIsLoading(false);
-        // getEmployers();
+        getEmployers();
     }, []);
 
     const getLayoutedElements = useCallback(
@@ -82,7 +84,7 @@ export const FlowTree = () => {
         [],
     );
 
-    const { edges: formattedEdges, nodes: formattedNodes } = transformData(rawData || []);
+    const { edges: formattedEdges, nodes: formattedNodes } = transformData(hierarchy || []);
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
         formattedNodes,
         formattedEdges,
@@ -90,7 +92,7 @@ export const FlowTree = () => {
 
     const { setCenter } = useReactFlow();
 
-    const [searchResults, setSearchResults] = useState<SourceNodesMap[]>([]);
+    const [searchResults, setSearchResults] = useState<Node[]>([]);
 
     const nodes = useMemo(() => layoutedNodes, [layoutedNodes]);
     const edges = useMemo(() => layoutedEdges, [layoutedEdges]);
@@ -105,11 +107,7 @@ export const FlowTree = () => {
     }, []);
 
     useEffect(() => {
-        setSearchResults(
-            treeSearch(layoutedNodes[0], (node: SourceNodesMap) =>
-                node.data.label.toLowerCase().includes(searchValue.toLowerCase()),
-            ),
-        );
+        setSearchResults(treeSearch(layoutedNodes, searchValue));
     }, [searchValue]);
 
     const [selectedNode, setSelectedNode] = useState<SourceNodesMap | undefined>(undefined);
@@ -133,23 +131,13 @@ export const FlowTree = () => {
 
     return (
         <div className="bg-main-gradient relative h-screen w-full">
-            <div className="absolute left-2 top-5 z-50 w-1/5 rounded-lg bg-primary bg-opacity-40 p-4">
-                <h1 className="mb-3 italic text-[#A3A3A3FF]">Поиск по коллективу</h1>
-                <Input value={searchValue} onValueChange={setSearchValue} color="warning" />
-                {searchResults?.length && (
-                    <div>
-                        {searchResults.map((sr) => (
-                            <button
-                                type={'button'}
-                                onClick={() => handleNodeClick({}, sr)}
-                                key={sr.id}
-                            >
-                                {sr.data.label}
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
+            <FlowTreeSearchPanel
+                searchResults={searchResults}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                handleNodeClick={handleNodeClick}
+            />
+
             <ReactFlow
                 onNodeClick={handleNodeClick}
                 edges={edges}

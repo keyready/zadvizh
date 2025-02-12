@@ -1,20 +1,14 @@
-import { SourceNodesMap } from './generateNodes.ts';
+import { type Node } from '@xyflow/react';
 
-export function treeSearch(
-    tree: SourceNodesMap,
-    predicate: (node: SourceNodesMap) => boolean,
-): SourceNodesMap[] {
-    let results = [];
+export function treeSearch(tree: Node[], search: string, searchField: string = 'label'): Node[] {
+    const results: Node[] = [];
 
-    if (predicate(tree) && !tree?.children?.length) {
-        results.push(tree);
-    }
-
-    if (tree.children && tree.children.length > 0) {
-        for (const child of tree.children) {
-            results = results.concat(treeSearch(child, predicate));
+    tree.forEach((node) => {
+        // @ts-expect-error non types
+        if (node.data[searchField].toLowerCase().includes(search.toLowerCase())) {
+            results.push(node);
         }
-    }
+    });
 
     return results;
 }

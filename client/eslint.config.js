@@ -18,6 +18,7 @@ export default [
             'max-len': ['error', { ignoreComments: true, code: 150 }],
             'react/jsx-max-props-per-line': [`error`, { maximum: 5 }],
             'import/no-unresolved': 'off',
+            '@typescript-eslint/no-unused-vars': 'warn',
             '@typescript-eslint/no-explicit-any': 'off',
             'import/order': [
                 'error',
