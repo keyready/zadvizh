@@ -33,7 +33,7 @@ export const FlowTree = () => {
     useEffect(() => {
         const getEmployers = async () => {
             try {
-                const result = await fetch('https://zadvizh.tech/api/v1/employers', {
+                const result = await fetch('http://localhost:5000/api/v1/employers', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': localStorage.getItem('t') || '',

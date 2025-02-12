@@ -59,7 +59,7 @@ export const RegisterPage = () => {
             if (step === 4) {
                 setIsLoading(true);
                 try {
-                    const result = await fetch('https://zadvizh.tech/api/v1/auth', {
+                    const result = await fetch('http://localhost:5000/api/v1/auth', {
                         body: JSON.stringify(newUserForm),
                         method: 'post',
                         headers: {
