@@ -14,7 +14,7 @@ export const MainPage = () => {
         setIsLoading(true);
 
         try {
-            const result = await fetch(`http://localhost:5000/api/v1/get_access?tgId=${data.id}`);
+            const result = await fetch(`https://zadvizh.tech/api/v1/get_access?tgId=${data.id}`);
 
             if (!result.ok) {
                 throw new Error(`HTTP error! Status: ${result.status}`);
@@ -36,7 +36,7 @@ export const MainPage = () => {
         const checkReferralValidity = async () => {
             try {
                 const result = await fetch(
-                    `http://localhost:5000/api/v1/check_ref?ref=${params.get('ref')}`,
+                    `https://zadvizh.tech/api/v1/check_ref?ref=${params.get('ref')}`,
                 );
 
                 if (!result.ok) {
