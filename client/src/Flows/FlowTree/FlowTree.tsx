@@ -3,6 +3,7 @@ import '@xyflow/react/dist/style.css';
 import dagre from '@dagrejs/dagre';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Spinner } from '@heroui/react';
+import { useNavigate } from 'react-router';
 
 import { RootGroup } from '../FlowNode/RootGroup.tsx';
 import { SubrootGroup } from '../FlowNode/SubrootGroup.tsx';
@@ -23,7 +24,7 @@ const nodeTypes = {
 };
 
 export const FlowTree = () => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [hierarchy, setHierarchy] = useState<SourceNodesMap[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -32,7 +33,7 @@ export const FlowTree = () => {
     useEffect(() => {
         const getEmployers = async () => {
             try {
-                const result = await fetch('/api/v1/employers', {
+                const result = await fetch('http://79.174.12.195:5000/api/v1/employers', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': localStorage.getItem('t') || '',
@@ -40,7 +41,7 @@ export const FlowTree = () => {
                 });
                 setHierarchy([await result.json()]);
             } catch (e) {
-                // navigate('/');
+                navigate('/');
             } finally {
                 setIsLoading(false);
             }

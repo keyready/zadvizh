@@ -59,7 +59,7 @@ export const RegisterPage = () => {
             if (step === 4) {
                 setIsLoading(true);
                 try {
-                    const result = await fetch('/api/v1/auth', {
+                    const result = await fetch('http://79.174.12.195:5000/api/v1/auth', {
                         body: JSON.stringify(newUserForm),
                         method: 'post',
                         headers: {
