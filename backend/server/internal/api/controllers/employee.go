@@ -16,6 +16,18 @@ func NewEmployeeControllers(employeeUsecase usecases.EmployeeUsecase) *EmployeeC
 	return &EmployeeControllers{employeeUsecase: employeeUsecase}
 }
 
+func (eCont *EmployeeControllers) GetAccessToken(ctx *gin.Context) {
+	tgId := ctx.Query("tgId")
+
+	httpCode, contrErr, token := eCont.employeeUsecase.GetAccessToken(tgId)
+	if contrErr != nil {
+		ctx.AbortWithStatusJSON(httpCode, contrErr.Error())
+		return
+	}
+
+	ctx.JSON(httpCode, gin.H{"accessToken": token})
+}
+
 func (eCont *EmployeeControllers) VerifyLink(ctx *gin.Context) {
 	ref := ctx.Query("ref")
 
@@ -35,7 +47,7 @@ func (eCont *EmployeeControllers) GetAllEmployers(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(httpCode, gin.H{"three": three})
+	ctx.JSON(httpCode, three)
 }
 
 func (eCont *EmployeeControllers) AuthEmployee(ctx *gin.Context) {
@@ -43,13 +55,13 @@ func (eCont *EmployeeControllers) AuthEmployee(ctx *gin.Context) {
 
 	bindErr := ctx.ShouldBindJSON(&authEmployee)
 	if bindErr != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("Ошибка получения данных с клиента: %s", bindErr.Error())})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": bindErr.Error()})
 		return
 	}
 
 	httpCode, contrErr := eCont.employeeUsecase.AuthEmployee(authEmployee)
 	if contrErr != nil {
-		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": fmt.Errorf("Ошибка сервера: %s", contrErr.Error())})
+		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": contrErr.Error()})
 		return
 	}
 

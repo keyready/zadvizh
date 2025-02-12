@@ -1,0 +1,15 @@
+FROM golang:1.23-alpine AS builder
+
+ENV BOT_TOKEN=7950443390:AAFaHXb6prhYCBFXpiLEXdKAav9dz4GrGrk
+ENV LINK_TEMPLATE=https://zadvizh.vercel.app/?ref=link_
+ENV CHATID=-1002438510106
+
+WORKDIR /app
+
+COPY . .
+
+RUN go mod download
+
+RUN go install github.com/air-verse/air@latest
+
+CMD ["air","-c",".air.toml"]

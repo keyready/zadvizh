@@ -7,10 +7,10 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
-	"log"
 	"net/http"
 	"server/internal/domain/types/models"
 	"server/internal/domain/types/request"
+	"slices"
 )
 
 var (
@@ -23,6 +23,7 @@ type EmployeeRepository interface {
 	GetAllTeamNames(field string) (teamNames []string)
 	GetAllScidirs(field string) (scidirs []string)
 	VerifyLink(authorLinkTgId string) (verifyLink bool)
+	GetAccessToken(tgId string) (check bool)
 }
 
 type EmployeeRepositoryImpl struct {
@@ -33,9 +34,19 @@ func NewEmployeeRepositoryImpl(mongoDB *mongo.Database) *EmployeeRepositoryImpl 
 	return &EmployeeRepositoryImpl{mongoDB: mongoDB}
 }
 
+func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) bool {
+	var e models.Employee
+	mongoErr := eRepo.mongoDB.Collection("employees").
+		FindOne(ctx, bson.M{"tgid": tgId}).Decode(&e)
+	if errors.Is(mongoErr, mongo.ErrNoDocuments) {
+		return false
+	}
+	return true
+}
+
 func (eRepo *EmployeeRepositoryImpl) VerifyLink(authorLinkTgId string) (verifyLink bool) {
 	mongoErr := eRepo.mongoDB.Collection("employees").
-		FindOne(ctx, bson.M{"TgId": authorLinkTgId}).Err()
+		FindOne(ctx, bson.M{"tgid": authorLinkTgId}).Err()
 
 	if errors.Is(mongoErr, mongo.ErrNoDocuments) {
 		return false
@@ -73,7 +84,7 @@ func (eRepo *EmployeeRepositoryImpl) GetAllScidirs(field string) (scidirs []stri
 
 func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []string) {
 	projection := bson.M{
-		"teamName": 1,
+		"teamname": 1,
 	}
 
 	cur, mongoErr := eRepo.mongoDB.Collection("employees").
@@ -90,8 +101,10 @@ func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []
 			return nil
 		}
 
-		if tN, exist := teamName["teamName"]; exist {
-			teamNames = append(teamNames, tN.(string))
+		if tN, exist := teamName["teamname"]; exist {
+			if !slices.Contains(teamNames, tN.(string)) {
+				teamNames = append(teamNames, tN.(string))
+			}
 		}
 	}
 
@@ -99,36 +112,34 @@ func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []
 }
 
 func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error) {
-	result, mongoErr := eRepo.mongoDB.Collection("employees").
+	_, mongoErr := eRepo.mongoDB.Collection("employees").
 		InsertOne(ctx, authEmployee)
 	if mongoErr != nil {
-		repoError = fmt.Errorf("Ошибка добавления нового участника: %w", mongoErr.Error())
+		repoError = fmt.Errorf("Ошибка добавления нового участника: %s", mongoErr.Error())
 		return http.StatusInternalServerError, repoError
 	}
-
-	log.Printf("Новый участник: %v", result.InsertedID)
 
 	return http.StatusOK, nil
 }
 
-func (eRepo *EmployeeRepositoryImpl) GetAllEmployees() (httpCode int, repoErr error, employees []models.Employee) {
+func (eRepo *EmployeeRepositoryImpl) GetAllEmployees() (httpCode int, repoErr error, employers []models.Employee) {
 	cur, mongoErr := eRepo.mongoDB.Collection("employees").
-		Find(ctx, bson.D{})
+		Find(context.TODO(), bson.D{})
 	defer cur.Close(ctx)
 
 	if mongoErr != nil {
-		repoErr = fmt.Errorf("Ошибка извлечения всех участнико: %w", mongoErr.Error())
+		repoErr = fmt.Errorf("Ошибка извлечения всех участнико: %s", mongoErr.Error())
 		return http.StatusInternalServerError, repoErr, nil
 	}
 
 	for cur.Next(ctx) {
-		var employee models.Employee
-		if decodeErr := cur.Decode(&employee); decodeErr != nil {
-			repoErr = fmt.Errorf("Ошибка анмаршалинга одного участника: %w", decodeErr.Error())
+		var e models.Employee
+		if decodeErr := cur.Decode(&e); decodeErr != nil {
+			repoErr = fmt.Errorf("Ошибка анмаршалинга одного участника: %s", decodeErr.Error())
 			return http.StatusInternalServerError, repoErr, nil
 		}
-		employees = append(employees, employee)
+		employers = append(employers, e)
 	}
 
-	return http.StatusOK, nil, employees
+	return http.StatusOK, nil, employers
 }

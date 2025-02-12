@@ -1,8 +1,9 @@
 FROM golang:1.23-alpine AS builder
 
 ENV SERVER_PORT=5000
-ENV MONGO_URI=mongodb://admin:admin@mongodb:27017/
-ENV MONGO_APP_NAME=zadvizh
+ENV MONGO_URI=mongodb://admin:admin@mongodb:27017/zadvizh?ssl=false&authSource=admin
+ENV MONGODB=zadvizh
+ENV JWT_SECRET_KEY=IimULHg9FRS0XleGnPZo
 
 WORKDIR /app
 

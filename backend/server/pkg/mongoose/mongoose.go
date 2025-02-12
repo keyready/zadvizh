@@ -22,8 +22,7 @@ func GetMongoClient() (*mongo.Client, error) {
 		defer cancel()
 
 		clientOptions := options.Client().
-			ApplyURI(os.Getenv("MONGO_URI")).
-			SetAppName(os.Getenv("MONGO_APP_NAME"))
+			ApplyURI(os.Getenv("MONGO_URI"))
 
 		clientInstance, clientErr = mongo.Connect(clientOptions)
 		if clientErr != nil {

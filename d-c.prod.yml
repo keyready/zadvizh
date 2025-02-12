@@ -3,7 +3,7 @@ services:
     container_name: zadvizh_server
     build:
       context: ./backend/server
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.bot.dev.bot.dev.prod
     ports:
       - 5000:5000
     depends_on:
