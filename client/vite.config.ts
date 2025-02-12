@@ -7,7 +7,7 @@ export default defineConfig({
         port: 3000,
         proxy: {
             '/api': {
-                target: 'https://zadvizh.tech/api',
+                target: 'http://localhost:5000/api',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api\//, ''),
             },
