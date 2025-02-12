@@ -33,7 +33,7 @@ export const FlowTree = () => {
     useEffect(() => {
         const getEmployers = async () => {
             try {
-                const result = await fetch('http://79.174.12.195:5000/api/v1/employers', {
+                const result = await fetch('/api/v1/employers', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': localStorage.getItem('t') || '',
