@@ -7,12 +7,7 @@ import (
 )
 
 func NewEmployeeRouters(eContr *controllers.EmployeeControllers, router *gin.Engine) {
-	employeeRouters := router.Group("/api/v1/employers")
-
-	employeeRouters.GET("", middleware.TokenMiddleware(), eContr.GetAllEmployers)
-
+	router.GET("/api/v1/employers", middleware.TokenMiddleware(), eContr.GetAllEmployers)
 	router.POST("/api/v1/auth", eContr.AuthEmployee)
-	router.GET("/api/v1/check_ref", eContr.VerifyLink)
 	router.GET("/api/v1/get_access", eContr.GetAccessToken)
-
 }

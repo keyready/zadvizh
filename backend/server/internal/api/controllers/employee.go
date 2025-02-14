@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/internal/domain/types/request"
@@ -26,18 +25,6 @@ func (eCont *EmployeeControllers) GetAccessToken(ctx *gin.Context) {
 	}
 
 	ctx.JSON(httpCode, gin.H{"accessToken": token})
-}
-
-func (eCont *EmployeeControllers) VerifyLink(ctx *gin.Context) {
-	ref := ctx.Query("ref")
-
-	httpCode, contrErr := eCont.employeeUsecase.VerifyLink(ref)
-	if contrErr != nil {
-		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": fmt.Sprintf("Ошибка валидации ссылки: %s", contrErr.Error())})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{})
 }
 
 func (eCont *EmployeeControllers) GetAllEmployers(ctx *gin.Context) {

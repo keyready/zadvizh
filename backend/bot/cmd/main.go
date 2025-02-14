@@ -3,14 +3,12 @@ package main
 import (
 	mongoosepackage "bot/mongoose"
 	"context"
-	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
-	"os"
-	"strconv"
 	"time"
 )
 
@@ -47,7 +45,7 @@ func (b *Bot) Run() {
 				SetSort(bson.D{{"_id", -1}})
 			err := employeesCollection.FindOne(context.Background(), bson.D{}, findOptions).Decode(&lastEmployee)
 			if err != nil {
-				fmt.Printf("Ошибка поиска последней записи: %s", err.Error())
+				continue
 			}
 
 			if lastKnownId != lastEmployee.ID {
@@ -78,23 +76,39 @@ func (b *Bot) Run() {
 	updates := b.Bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		chatMember, err := b.Bot.GetChatMember(tgbotapi.GetChatMemberConfig{
-			tgbotapi.ChatConfigWithUser{
-				ChatID: update.Message.Chat.ID,
-				UserID: update.Message.From.ID,
-			},
-		})
-		if err != nil {
-			log.Fatalf("Ошибка получения информации о статусе участника чата: %s", err.Error())
-		}
-
 		if update.Message != nil && update.Message.IsCommand() {
+			chatMember, err := b.Bot.GetChatMember(tgbotapi.GetChatMemberConfig{
+				tgbotapi.ChatConfigWithUser{
+					ChatID: update.Message.Chat.ID,
+					UserID: update.Message.From.ID,
+				},
+			})
+			if err != nil {
+				log.Fatalf("Ошибка получения информации о статусе участника чата: %s", err.Error())
+			}
 			if update.Message.Command() == "invite" {
 				if chatMember.Status == "administrator" || chatMember.Status == "creator" {
-					authorLink := update.Message.From.ID
-					authorLinkB64 := base64.StdEncoding.EncodeToString([]byte(strconv.FormatInt(authorLink, 10)))
+					linkConfig := tgbotapi.CreateChatInviteLinkConfig{
+						ChatConfig: tgbotapi.ChatConfig{
+							ChatID: update.Message.Chat.ID,
+						},
+						ExpireDate:         int(time.Now().Add(10 * time.Minute).Unix()),
+						CreatesJoinRequest: true,
+						Name:               "Ссылка-приглашение",
+					}
 
-					inviteLink := os.Getenv("LINK_TEMPLATE") + authorLinkB64
+					var responseApi map[string]interface{}
+					resp, getErr := b.Bot.Request(linkConfig)
+					if getErr != nil {
+						log.Fatalf("Ошибка генерации ссылки-приглашения: %s", getErr.Error())
+					}
+
+					decodeErr := json.Unmarshal(resp.Result, &responseApi)
+					if decodeErr != nil {
+						log.Fatalf("Ошибка получения ссылки-приглашения: %s", getErr.Error())
+					}
+
+					inviteLink := responseApi["invite_link"].(string)
 
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 					msg.ParseMode = tgbotapi.ModeHTML
@@ -111,6 +125,7 @@ func (b *Bot) Run() {
 					if sendErr != nil {
 						log.Fatalf("Ошибка выполнения команды /invite: %s", sendErr.Error())
 					}
+
 				} else {
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 					msg.Text = "У вас нет прав на выполнение данной команды"
@@ -121,28 +136,55 @@ func (b *Bot) Run() {
 					}
 				}
 			}
-		}
-
-		if update.CallbackQuery != nil {
-			callback := update.CallbackQuery
-
-			if callback.Message == nil {
-				continue
+		} else if update.CallbackQuery != nil {
+			chatMember, err := b.Bot.GetChatMember(tgbotapi.GetChatMemberConfig{
+				tgbotapi.ChatConfigWithUser{
+					ChatID: update.CallbackQuery.Message.Chat.ID,
+					UserID: update.CallbackQuery.From.ID,
+				},
+			})
+			if err != nil {
+				log.Fatalf("Ошибка получения инфы о юзере: %s", err.Error())
 			}
+			if update.CallbackQuery.Data == "delete_message" {
+				if chatMember.Status == "administrator" || chatMember.Status == "creator" {
+					messageID := update.CallbackQuery.Message.MessageID
+					chatID := update.CallbackQuery.Message.Chat.ID
+					inviteLink := update.CallbackQuery.Message.Text
 
-			if callback.Data == "delete_message" && (chatMember.Status == "administrator" || chatMember.Status == "creator") {
-				editMsg := tgbotapi.NewEditMessageText(callback.Message.Chat.ID,
-					callback.Message.MessageID, "Сообщение удалено")
-				editMsg.ParseMode = tgbotapi.ModeHTML
-				editMsg.ReplyMarkup = nil
+					revokeInviteLinkCfg := tgbotapi.RevokeChatInviteLinkConfig{
+						ChatConfig: tgbotapi.ChatConfig{
+							ChatID: chatID,
+						},
+						InviteLink: inviteLink,
+					}
 
-				if _, err := b.Bot.Send(editMsg); err != nil {
-					log.Printf("Ошибка удаления сообщения: %v", err.Error())
-				}
+					_, apiErr := b.Bot.Request(revokeInviteLinkCfg)
+					if apiErr != nil {
+						log.Fatalf("Ошибка отзыва ссылки: %s", apiErr.Error())
+					}
 
-				answerCallback := tgbotapi.NewCallback(callback.ID, "")
-				if _, err := b.Bot.Request(answerCallback); err != nil {
-					log.Printf("Ошибка отправки коллбека удаления: %v", err.Error())
+					editMsg := tgbotapi.NewEditMessageText(chatID, messageID, "Сообщение удалено")
+					editMsg.ParseMode = tgbotapi.ModeHTML
+
+					nilInlineKeyboard := tgbotapi.NewInlineKeyboardMarkup()
+					editMsg.ReplyMarkup = &nilInlineKeyboard
+
+					_, sendErr := b.Bot.Send(editMsg)
+					if sendErr != nil {
+						log.Fatalf("Ошибка при изменении текста: %s", sendErr.Error())
+					}
+
+					callBackConfig := tgbotapi.CallbackConfig{
+						CallbackQueryID: update.CallbackQuery.ID,
+						Text:            "Сообщение удалено",
+						ShowAlert:       false,
+					}
+
+					_, apiErr = b.Bot.Request(callBackConfig)
+					if apiErr != nil {
+						log.Fatalf("Ошибка ответа на callback: %s", apiErr.Error())
+					}
 				}
 			}
 		}

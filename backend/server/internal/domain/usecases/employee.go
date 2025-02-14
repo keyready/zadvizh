@@ -1,7 +1,6 @@
 package usecases
 
 import (
-	"encoding/base64"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -12,12 +11,10 @@ import (
 	"server/internal/domain/types/models"
 	"server/internal/domain/types/request"
 	"server/internal/domain/types/response"
-	"strings"
 )
 
 type EmployeeUsecase interface {
 	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error)
-	VerifyLink(ref string) (httpCode int, usecaseError error)
 	GetAllEmployers() (httpCode int, usecaseError error, three response.Node)
 	GetAccessToken(tgId string) (httpCode int, usecaseError error, token string)
 }
@@ -43,19 +40,6 @@ func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, 
 	tokenString, _ := t.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 
 	return http.StatusOK, nil, tokenString
-}
-
-func (eUsecase *EmployeeUsecaseImpl) VerifyLink(ref string) (httpCode int, usecaseError error) {
-	authorLinkId := strings.Split(ref, "_")[len(strings.Split(ref, "_"))-1]
-	authorLinkIdByte, _ := base64.StdEncoding.DecodeString(authorLinkId)
-	authorLinkId = string(authorLinkIdByte)
-
-	verifyLink := eUsecase.employeeRepo.VerifyLink(authorLinkId)
-	if !verifyLink {
-		return http.StatusUnauthorized, fmt.Errorf("Невалидная ссылка приглашение")
-	}
-
-	return http.StatusOK, nil
 }
 
 func (eUsecase *EmployeeUsecaseImpl) GetAllEmployers() (httpCode int, usecaseError error, three response.Node) {

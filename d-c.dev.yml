@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.bot.dev
     container_name: bot
     volumes:
-      - ./bot:/app
+      - ./backend/bot:/app
     depends_on:
       - mongodb
       - server
@@ -16,7 +16,7 @@ services:
       dockerfile: Dockerfile.server.dev
     container_name: server
     volumes:
-      - ./server:/app
+      - ./backend/server:/app
     ports:
       - 5000:5000
     depends_on:

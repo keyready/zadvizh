@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -21,7 +20,6 @@ type EmployeeRepository interface {
 	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error)
 	GetAllEmployees() (httpCode int, repoError error, employees []models.Employee)
 	GetAllTeamNames(field string) (teamNames []string)
-	VerifyLink(authorLinkTgId string) (verifyLink bool)
 	GetAccessToken(tgId string) (check bool)
 }
 
@@ -33,24 +31,12 @@ func NewEmployeeRepositoryImpl(mongoDB *mongo.Database) *EmployeeRepositoryImpl 
 	return &EmployeeRepositoryImpl{mongoDB: mongoDB}
 }
 
-func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) bool {
-	var e models.Employee
-	mongoErr := eRepo.mongoDB.Collection("employees").
-		FindOne(ctx, bson.M{"tgid": tgId}).Decode(&e)
-	if errors.Is(mongoErr, mongo.ErrNoDocuments) {
+func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) (check bool) {
+	var result bson.M
+	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"token": tgId}).Decode(&result)
+	if mongoErr == mongo.ErrNoDocuments {
 		return false
 	}
-	return true
-}
-
-func (eRepo *EmployeeRepositoryImpl) VerifyLink(authorLinkTgId string) (verifyLink bool) {
-	mongoErr := eRepo.mongoDB.Collection("employees").
-		FindOne(ctx, bson.M{"tgid": authorLinkTgId}).Err()
-
-	if errors.Is(mongoErr, mongo.ErrNoDocuments) {
-		return false
-	}
-
 	return true
 }
 
