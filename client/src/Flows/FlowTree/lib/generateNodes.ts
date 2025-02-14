@@ -149,9 +149,30 @@ export const rawData: SourceNodesMap[] = [
                                 id: 'dev-team-2',
                                 data: { label: 'Konyhov&Co' },
                                 children: [
-                                    { id: 'Konyhov&Co-1', data: { label: 'Коныхов В.С.' } },
-                                    { id: 'Konyhov&Co-2', data: { label: 'Тараскин Т.Д.' } },
-                                    { id: 'Konyhov&Co-3', data: { label: 'Ильчук Д.Д.' } },
+                                    {
+                                        id: 'Konyhov&Co-1',
+                                        data: {
+                                            label: 'Коныхов В.С.',
+                                            teamRole: 'part',
+                                            position: 'Fullstack',
+                                        },
+                                    },
+                                    {
+                                        id: 'Konyhov&Co-2',
+                                        data: {
+                                            label: 'Тараскин Т.Д.',
+                                            teamRole: 'cap',
+                                            position: 'Fullstack',
+                                        },
+                                    },
+                                    {
+                                        id: 'Konyhov&Co-3',
+                                        data: {
+                                            label: 'Ильчук Д.Д.',
+                                            teamRole: 'part',
+                                            position: 'Product Manager',
+                                        },
+                                    },
                                 ],
                             },
                         ],

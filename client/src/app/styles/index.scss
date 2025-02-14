@@ -17,3 +17,18 @@ body {
 	height: 100vh;
 	overflow: hidden;
 }
+
+*::-webkit-scrollbar {
+	width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+	width: 5px;
+	background: #262267;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: #050c26;
+	border-radius: 5px;
+	border: 3px solid #050c26;
+}

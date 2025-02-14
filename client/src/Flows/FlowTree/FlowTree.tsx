@@ -16,7 +16,7 @@ import { FlowTreeSearchPanel } from './FlowTreeSearchPanel.tsx';
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
 const nodeWidth = 70;
-const nodeHeight = 70;
+const nodeHeight = 30;
 
 const nodeTypes = {
     RootGroup: RootGroup,
@@ -29,6 +29,7 @@ export const FlowTree = () => {
     const [hierarchy, setHierarchy] = useState<SourceNodesMap[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [searchValue, setSearchValue] = useState<string>('');
+    const [searchField, setSearchField] = useState<string>('label');
 
     useEffect(() => {
         const getEmployers = async () => {
@@ -107,8 +108,8 @@ export const FlowTree = () => {
     }, []);
 
     useEffect(() => {
-        setSearchResults(treeSearch(layoutedNodes, searchValue));
-    }, [searchValue]);
+        setSearchResults(treeSearch(layoutedNodes, searchValue, searchField));
+    }, [searchField, searchValue]);
 
     const [selectedNode, setSelectedNode] = useState<SourceNodesMap | undefined>(undefined);
 
@@ -136,6 +137,7 @@ export const FlowTree = () => {
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
                 handleNodeClick={handleNodeClick}
+                setSearchField={setSearchField}
             />
 
             <ReactFlow

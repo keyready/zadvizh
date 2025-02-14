@@ -5,7 +5,7 @@ export function treeSearch(tree: Node[], search: string, searchField: string = '
 
     tree.forEach((node) => {
         // @ts-expect-error non types
-        if (node.data[searchField].toLowerCase().includes(search.toLowerCase())) {
+        if (node?.data[searchField]?.toLowerCase()?.includes(search.toLowerCase())) {
             results.push(node);
         }
     });
