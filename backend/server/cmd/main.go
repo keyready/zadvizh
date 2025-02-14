@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 	"server/internal/api/routers"
 	"server/pkg/mongoose"
 	"time"
@@ -11,7 +10,7 @@ import (
 
 func main() {
 	mongoClient, _ := mongoose.GetMongoClient()
-	appHandlers := routers.AppRouters(mongoClient.Database(os.Getenv("MONGODB")))
+	appHandlers := routers.AppRouters(mongoClient.Database("zadvizh"))
 
 	server := &http.Server{
 		WriteTimeout: time.Second * 120,

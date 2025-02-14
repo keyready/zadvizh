@@ -21,6 +21,7 @@ type EmployeeRepository interface {
 	GetAllEmployees() (httpCode int, repoError error, employees []models.Employee)
 	GetAllTeamNames(field string) (teamNames []string)
 	GetAccessToken(tgId string) (check bool)
+	VerifyLink(tgId string) (check bool)
 }
 
 type EmployeeRepositoryImpl struct {
@@ -29,6 +30,15 @@ type EmployeeRepositoryImpl struct {
 
 func NewEmployeeRepositoryImpl(mongoDB *mongo.Database) *EmployeeRepositoryImpl {
 	return &EmployeeRepositoryImpl{mongoDB: mongoDB}
+}
+
+func (eRepo *EmployeeRepositoryImpl) VerifyLink(tgId string) (check bool) {
+	var res bson.M
+	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": tgId}).Decode(&res)
+	if mongoErr == mongo.ErrNoDocuments {
+		return false
+	}
+	return true
 }
 
 func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) (check bool) {

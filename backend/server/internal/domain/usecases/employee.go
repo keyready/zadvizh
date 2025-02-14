@@ -17,6 +17,7 @@ type EmployeeUsecase interface {
 	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error)
 	GetAllEmployers() (httpCode int, usecaseError error, three response.Node)
 	GetAccessToken(tgId string) (httpCode int, usecaseError error, token string)
+	VerifyLink(tgId string) (httpCode int, usecaseError error)
 }
 
 type EmployeeUsecaseImpl struct {
@@ -25,6 +26,14 @@ type EmployeeUsecaseImpl struct {
 
 func NewEmployeeUsecase(employeeRepo repositories.EmployeeRepository) *EmployeeUsecaseImpl {
 	return &EmployeeUsecaseImpl{employeeRepo: employeeRepo}
+}
+
+func (eUsecase *EmployeeUsecaseImpl) VerifyLink(tgId string) (httpCode int, usecaseError error) {
+	check := eUsecase.employeeRepo.VerifyLink(tgId)
+	if !check {
+		return http.StatusUnauthorized, fmt.Errorf("Нет доступа")
+	}
+	return http.StatusOK, nil
 }
 
 func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, usecaseError error, token string) {

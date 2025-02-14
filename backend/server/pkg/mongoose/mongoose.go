@@ -6,21 +6,18 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
 	"sync"
-	"time"
 )
 
 var (
 	clientInstance *mongo.Client
 	clientErr      error
 	mongoOnce      sync.Once
+	ctx            context.Context
 )
 
 func GetMongoClient() (*mongo.Client, error) {
 	mongoOnce.Do(func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		mongoUri := "mongodb://admin:admin@mongodb:27017/zadvizh"
+		mongoUri := "mongodb://admin:admin@mongodb:27017/zadvizh?ssl=false&authSource=admin"
 		clientOptions := options.Client().
 			ApplyURI(mongoUri)
 
@@ -35,6 +32,5 @@ func GetMongoClient() (*mongo.Client, error) {
 
 		log.Println("Подключение к MongoDB успешно")
 	})
-
 	return clientInstance, clientErr
 }
