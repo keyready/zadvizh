@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -10,6 +11,7 @@ import (
 	"server/internal/domain/types/models"
 	"server/internal/domain/types/request"
 	"slices"
+	"strings"
 )
 
 var (
@@ -17,7 +19,7 @@ var (
 )
 
 type EmployeeRepository interface {
-	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error)
+	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error, inviteLink string)
 	GetAllEmployees() (httpCode int, repoError error, employees []models.Employee)
 	GetAllTeamNames(field string) (teamNames []string)
 	GetAccessToken(tgId string) (check bool)
@@ -32,7 +34,13 @@ func NewEmployeeRepositoryImpl(mongoDB *mongo.Database) *EmployeeRepositoryImpl 
 	return &EmployeeRepositoryImpl{mongoDB: mongoDB}
 }
 
-func (eRepo *EmployeeRepositoryImpl) VerifyLink(tgId string) (check bool) {
+func (eRepo *EmployeeRepositoryImpl) VerifyLink(link string) (check bool) {
+	decodedRef, decodeErr := base64.StdEncoding.DecodeString(link)
+	if decodeErr != nil {
+		return false
+	}
+
+	tgId := strings.Split(string(decodedRef), ":")[1]
 	var res bson.M
 	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": tgId}).Decode(&res)
 	if mongoErr == mongo.ErrNoDocuments {
@@ -79,15 +87,29 @@ func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []
 	return teamNames
 }
 
-func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error) {
+func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error, inviteLink string) {
 	_, mongoErr := eRepo.mongoDB.Collection("employees").
 		InsertOne(ctx, authEmployee)
 	if mongoErr != nil {
 		repoError = fmt.Errorf("Ошибка добавления нового участника: %s", mongoErr.Error())
-		return http.StatusInternalServerError, repoError
+		return http.StatusInternalServerError, repoError, inviteLink
 	}
 
-	return http.StatusOK, nil
+	prj := bson.M{
+		"_id":        0,
+		"invitelink": 1,
+	}
+	findOptions := options.FindOne().SetProjection(prj)
+
+	mongoErr = eRepo.mongoDB.Collection("employees").
+		FindOne(ctx, bson.D{{"tdid", authEmployee.TgId}}, findOptions).
+		Decode(&inviteLink)
+	if mongoErr != nil {
+		repoError = fmt.Errorf("Не нашел инвайт-линк: %s", mongoErr.Error())
+		return http.StatusInternalServerError, repoError, inviteLink
+	}
+
+	return http.StatusOK, nil, inviteLink
 }
 
 func (eRepo *EmployeeRepositoryImpl) GetAllEmployees() (httpCode int, repoErr error, employers []models.Employee) {

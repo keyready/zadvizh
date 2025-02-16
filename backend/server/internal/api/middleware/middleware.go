@@ -15,7 +15,9 @@ func TokenMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		_, err := jwt.ParseWithClaims(authHeader, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+		claims := jwt.MapClaims{}
+
+		_, err := jwt.ParseWithClaims(authHeader, &claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET_KEY")), nil
 		})
 		if err != nil {
@@ -23,6 +25,7 @@ func TokenMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		ctx.Set("tgId", claims["tgId"].(string))
 		ctx.Next()
 	}
 }

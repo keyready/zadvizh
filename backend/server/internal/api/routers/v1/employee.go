@@ -10,4 +10,5 @@ func NewEmployeeRouters(eContr *controllers.EmployeeControllers, router *gin.Eng
 	router.GET("/api/v1/employers", middleware.TokenMiddleware(), eContr.GetAllEmployers)
 	router.POST("/api/v1/auth", eContr.AuthEmployee)
 	router.GET("/api/v1/get_access", eContr.GetAccessToken)
+	router.GET("/api/v1/check_ref", eContr.VerifyLink)
 }

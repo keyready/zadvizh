@@ -1,0 +1,27 @@
+[
+  {
+    "firstname": "Дмитрий",
+    "lastname": "Нагибин",
+    "middlename": "Владимирович"
+  },
+  {
+    "firstname": "Моргунов",
+    "lastname": "Владимир",
+    "middlename": "Михайлович"
+  },
+  {
+    "firstname": "Ломако",
+    "lastname": "Александр",
+    "middlename": "Григорьевич"
+  },
+  {
+    "firstname": "Компаниец",
+    "lastname": "Радион",
+    "middlename": "Иванович"
+  },
+  {
+    "firstname": "Якунин",
+    "lastname": "Владимир",
+    "middlename": "Иванович"
+  }
+]

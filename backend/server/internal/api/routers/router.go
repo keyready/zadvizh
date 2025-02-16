@@ -17,5 +17,10 @@ func AppRouters(mongoDB *mongo.Database) *gin.Engine {
 	eContr := controllers.NewEmployeeControllers(eUsecase)
 	v1.NewEmployeeRouters(eContr, router)
 
+	tRepo := repositories.NewTeacherRepositoryImpl(mongoDB)
+	tUsecase := usecases.NewTeacherRepostoryImpl(tRepo)
+	tContr := controllers.NewTeacherControllers(tUsecase)
+	v1.NewTeacherRouters(tContr, router)
+
 	return router
 }

@@ -3,12 +3,14 @@ package main
 import (
 	mongoosepackage "bot/mongoose"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -23,8 +25,9 @@ type Employee struct {
 	TeamRole   string        `bson:"teamrole" json:"teamRole"`
 	Scidir     string        `bson:"scidir" json:"scidir"`
 
-	TgId string `bson:"tgid" json:"tgId"`
-	Ref  string `bson:"ref" json:"ref"`
+	TgId       string `bson:"tgid" json:"tgId"`
+	Ref        string `bson:"ref" json:"ref"`
+	InviteLink string `bson:"invitelink" json:"inviteLink"`
 }
 
 type Bot struct {
@@ -33,7 +36,6 @@ type Bot struct {
 
 func (b *Bot) Run() {
 	mongoClient, _ := mongoosepackage.GetMongoClient()
-
 	employeesCollection := mongoClient.Database("zadvizh").Collection("employees")
 	var lastKnownId bson.ObjectID
 
@@ -51,8 +53,8 @@ func (b *Bot) Run() {
 			if lastKnownId != lastEmployee.ID {
 				msg := tgbotapi.NewMessage(-1002438510106, "")
 				msg.Text = fmt.Sprintf(`В нашем коллективе пополнение!
-Встречаем %s %s (%s)!
-Род деятельности: %s на позиции %s`, lastEmployee.Firstname,
+	Встречаем %s %s (%s)!
+	Род деятельности: %s на позиции %s`, lastEmployee.Firstname,
 					lastEmployee.Lastname,
 					lastEmployee.Department,
 					lastEmployee.Field,
@@ -92,7 +94,7 @@ func (b *Bot) Run() {
 						ChatConfig: tgbotapi.ChatConfig{
 							ChatID: update.Message.Chat.ID,
 						},
-						ExpireDate:         int(time.Now().Add(10 * time.Minute).Unix()),
+						ExpireDate:         int(time.Now().Add(3 * time.Minute).Unix()),
 						CreatesJoinRequest: true,
 						Name:               "Ссылка-приглашение",
 					}
@@ -105,21 +107,23 @@ func (b *Bot) Run() {
 
 					decodeErr := json.Unmarshal(resp.Result, &responseApi)
 					if decodeErr != nil {
-						log.Fatalf("Ошибка получения ссылки-приглашения: %s", getErr.Error())
+						log.Fatalf("Ошибка получения ссылки-приглашения: %s", decodeErr.Error())
 					}
 
-					inviteLink := responseApi["invite_link"].(string)
+					authorId := strconv.Itoa(int(update.Message.From.ID))
+					bodyRef := "author:" + authorId
+					ref := base64.StdEncoding.EncodeToString([]byte(bodyRef))
+					inviteLink := "https://zadvizh.tech/?ref=" + ref
 
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 					msg.ParseMode = tgbotapi.ModeHTML
 
-					msg.Text = fmt.Sprintf("Сгенерировал <a href=\"%s\">ссылку</a> на вступление. Удалить можно кнопкой ниже.", inviteLink)
+					msg.Text = fmt.Sprintf("Сгенерировал <a href=\"%s\">ссылку</a> на регистрацию. Удалить можно кнопкой ниже.", inviteLink)
 
-					inlineKeyboard := tgbotapi.NewInlineKeyboardMarkup(
-						tgbotapi.NewInlineKeyboardRow(
-							tgbotapi.NewInlineKeyboardButtonData("Удалить сообщение", "delete_message")),
-					)
-					msg.ReplyMarkup = inlineKeyboard
+					deleteButton := tgbotapi.NewInlineKeyboardButtonData("Отозвать ссылку", "delete_message")
+					row := []tgbotapi.InlineKeyboardButton{deleteButton}
+					inlineKeyboard := [][]tgbotapi.InlineKeyboardButton{row}
+					msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(inlineKeyboard...)
 
 					_, sendErr := b.Bot.Send(msg)
 					if sendErr != nil {
@@ -150,25 +154,11 @@ func (b *Bot) Run() {
 				if chatMember.Status == "administrator" || chatMember.Status == "creator" {
 					messageID := update.CallbackQuery.Message.MessageID
 					chatID := update.CallbackQuery.Message.Chat.ID
-					inviteLink := update.CallbackQuery.Message.Text
-
-					revokeInviteLinkCfg := tgbotapi.RevokeChatInviteLinkConfig{
-						ChatConfig: tgbotapi.ChatConfig{
-							ChatID: chatID,
-						},
-						InviteLink: inviteLink,
-					}
-
-					_, apiErr := b.Bot.Request(revokeInviteLinkCfg)
-					if apiErr != nil {
-						log.Fatalf("Ошибка отзыва ссылки: %s", apiErr.Error())
-					}
 
 					editMsg := tgbotapi.NewEditMessageText(chatID, messageID, "Сообщение удалено")
 					editMsg.ParseMode = tgbotapi.ModeHTML
 
-					nilInlineKeyboard := tgbotapi.NewInlineKeyboardMarkup()
-					editMsg.ReplyMarkup = &nilInlineKeyboard
+					editMsg.ReplyMarkup = nil
 
 					_, sendErr := b.Bot.Send(editMsg)
 					if sendErr != nil {
@@ -181,7 +171,7 @@ func (b *Bot) Run() {
 						ShowAlert:       false,
 					}
 
-					_, apiErr = b.Bot.Request(callBackConfig)
+					_, apiErr := b.Bot.Request(callBackConfig)
 					if apiErr != nil {
 						log.Fatalf("Ошибка ответа на callback: %s", apiErr.Error())
 					}

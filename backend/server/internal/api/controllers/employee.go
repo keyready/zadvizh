@@ -15,6 +15,18 @@ func NewEmployeeControllers(employeeUsecase usecases.EmployeeUsecase) *EmployeeC
 	return &EmployeeControllers{employeeUsecase: employeeUsecase}
 }
 
+func (eCont *EmployeeControllers) VerifyLink(ctx *gin.Context) {
+	ref := ctx.Query("ref")
+
+	httpCode, contrErr := eCont.employeeUsecase.VerifyLink(ref)
+	if contrErr != nil {
+		ctx.AbortWithStatusJSON(httpCode, contrErr.Error())
+		return
+	}
+
+	ctx.JSON(httpCode, gin.H{})
+}
+
 func (eCont *EmployeeControllers) GetAccessToken(ctx *gin.Context) {
 	tgId := ctx.Query("tgId")
 
@@ -46,11 +58,11 @@ func (eCont *EmployeeControllers) AuthEmployee(ctx *gin.Context) {
 		return
 	}
 
-	httpCode, contrErr := eCont.employeeUsecase.AuthEmployee(authEmployee)
+	httpCode, contrErr, inviteLink := eCont.employeeUsecase.AuthEmployee(authEmployee)
 	if contrErr != nil {
 		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": contrErr.Error()})
 		return
 	}
 
-	ctx.JSON(httpCode, gin.H{})
+	ctx.JSON(httpCode, gin.H{"inviteLink": inviteLink})
 }

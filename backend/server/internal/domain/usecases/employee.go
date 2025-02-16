@@ -14,7 +14,7 @@ import (
 )
 
 type EmployeeUsecase interface {
-	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error)
+	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error, inviteLink string)
 	GetAllEmployers() (httpCode int, usecaseError error, three response.Node)
 	GetAccessToken(tgId string) (httpCode int, usecaseError error, token string)
 	VerifyLink(tgId string) (httpCode int, usecaseError error)
@@ -224,10 +224,10 @@ func (eUsecase *EmployeeUsecaseImpl) GetAllEmployers() (httpCode int, usecaseErr
 	return httpCode, nil, three
 }
 
-func (eUsecae *EmployeeUsecaseImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error) {
-	httpCode, usecaseError = eUsecae.employeeRepo.AuthEmployee(authEmployee)
+func (eUsecae *EmployeeUsecaseImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error, inviteLink string) {
+	httpCode, usecaseError, inviteLink = eUsecae.employeeRepo.AuthEmployee(authEmployee)
 	if usecaseError != nil {
-		return httpCode, usecaseError
+		return httpCode, usecaseError, inviteLink
 	}
-	return httpCode, nil
+	return httpCode, nil, inviteLink
 }
