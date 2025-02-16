@@ -92,6 +92,17 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	refTgId := strings.Split(string(refTgIdByte), ":")[1]
 	authEmployee.Ref = refTgId
 
+	if authEmployee.Firstname == "Валентин" {
+		_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx,
+			bson.M{"firstname": "Валентин"},
+			authEmployee)
+	}
+	if authEmployee.Firstname == "Родион" {
+		_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx,
+			bson.M{"firstname": "Родион"},
+			authEmployee)
+	}
+
 	_, mongoErr := eRepo.mongoDB.Collection("employees").
 		InsertOne(ctx, authEmployee)
 	if mongoErr != nil {
