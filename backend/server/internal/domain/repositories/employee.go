@@ -88,6 +88,10 @@ func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []
 }
 
 func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error, inviteLink string) {
+	refTgIdByte, _ := base64.StdEncoding.DecodeString(authEmployee.Ref)
+	refTgId := strings.Split(string(refTgIdByte), ":")[1]
+	authEmployee.Ref = refTgId
+
 	_, mongoErr := eRepo.mongoDB.Collection("employees").
 		InsertOne(ctx, authEmployee)
 	if mongoErr != nil {
