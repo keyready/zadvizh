@@ -4,9 +4,11 @@ import dagre from '@dagrejs/dagre';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Spinner } from '@heroui/react';
 import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 
 import { RootGroup } from '../FlowNode/RootGroup.tsx';
 import { SubrootGroup } from '../FlowNode/SubrootGroup.tsx';
+import { RootState } from '../../app/store/store.ts';
 
 import { SourceNodesMap, transformData } from './lib/generateNodes.ts';
 import { LeafDrawer } from './LeafDrawer.tsx';
@@ -26,6 +28,8 @@ const nodeTypes = {
 export const FlowTree = () => {
     const navigate = useNavigate();
 
+    const userToken = useSelector((state: RootState) => state.user.accessToken);
+
     const [hierarchy, setHierarchy] = useState<SourceNodesMap[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [searchValue, setSearchValue] = useState<string>('');
@@ -37,7 +41,7 @@ export const FlowTree = () => {
                 const result = await fetch('https://zadvizh.tech/api/v1/employers', {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': localStorage.getItem('t') || '',
+                        'Authorization': userToken || '',
                     },
                 });
                 setHierarchy([await result.json()]);

@@ -2,6 +2,10 @@ import { LoginButton, TelegramAuthData } from '@telegram-auth/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Spinner } from '@heroui/react';
+import { useDispatch } from 'react-redux';
+
+import { setUserTgId } from '../../entites/User';
+import { setUserAccessToken } from '../../entites/User/model/UserSlice.ts';
 
 export const MainPage = () => {
     const navigate = useNavigate();
@@ -9,6 +13,8 @@ export const MainPage = () => {
 
     const [isUserRegistered, setIsUserRegistered] = useState<string>('unknown');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const dispatch = useDispatch();
 
     const handleSuccessAuth = useCallback(async (data: TelegramAuthData) => {
         setIsLoading(true);
@@ -21,8 +27,8 @@ export const MainPage = () => {
             }
 
             const responseData = await result.json();
-            const accessToken = responseData.accessToken;
-            localStorage.setItem('t', accessToken);
+            dispatch(setUserTgId(data.id.toString()));
+            dispatch(setUserAccessToken(responseData.accessToken));
             navigate('/hierarchy');
         } catch (e) {
             setIsUserRegistered('unregistered');
@@ -114,7 +120,7 @@ export const MainPage = () => {
                     <LoginButton
                         cornerRadius={10}
                         onAuthCallback={(data) => {
-                            console.log(data);
+                            dispatch(setUserTgId(data.id.toString()));
                             navigate(`/auth/continue?ref=${params.get('ref') || ''}&un=${data.id}`);
                         }}
                         botUsername={import.meta.env.VITE_BOT_USERNAME}
