@@ -35,7 +35,38 @@ func GetMongoClient() (*mongo.Client, error) {
 			log.Fatalf("Ошибка пинга MongoDB: %v", pingErr.Error())
 		}
 
-		teachersData, readErr := ioutil.ReadFile("/app/data/teachers.json")
+		adminsData, err := ioutil.ReadFile("/app/data/admins.json")
+		if err != nil {
+			log.Fatalf("Ошибка чтения файла с данными админов: %v", err.Error())
+		}
+
+		var admins []models.Employee
+		dErr := json.Unmarshal(adminsData, &admins)
+		if dErr != nil {
+			log.Fatalf("Ошибка анмаршалинга json-файла: %v", dErr.Error())
+		}
+
+		for _, admin := range admins {
+			admin.ID = bson.NewObjectID()
+
+			var res bson.M
+			mongoErr := clientInstance.Database("zadvizh").
+				Collection("employees").FindOne(ctx, bson.D{
+				{"firstname", admin.Firstname},
+			}).Decode(&res)
+			if mongoErr != mongo.ErrNoDocuments {
+				continue
+			}
+
+			_, insertErr := clientInstance.Database("zadvizh").
+				Collection("employees").
+				InsertOne(ctx, admin)
+			if insertErr != nil {
+				log.Fatalf("Ошибка добавления в БД нового препода: %v", insertErr.Error())
+			}
+		}
+
+		var teachersData, readErr = ioutil.ReadFile("/app/data/teachers.json")
 		if readErr != nil {
 			log.Fatalf("Ошибка чтения файла с данными преподавателей: %v", readErr.Error())
 		}
