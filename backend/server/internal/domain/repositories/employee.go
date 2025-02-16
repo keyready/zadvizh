@@ -95,19 +95,10 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 		return http.StatusInternalServerError, repoError, inviteLink
 	}
 
-	prj := bson.M{
-		"_id":        0,
-		"invitelink": 1,
-	}
-	findOptions := options.FindOne().SetProjection(prj)
+	var a models.Employee
+	_ = eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": authEmployee.Ref}).Decode(&a)
 
-	mongoErr = eRepo.mongoDB.Collection("employees").
-		FindOne(ctx, bson.D{{"tdid", authEmployee.TgId}}, findOptions).
-		Decode(&inviteLink)
-	if mongoErr != nil {
-		repoError = fmt.Errorf("Не нашел инвайт-линк: %s", mongoErr.Error())
-		return http.StatusInternalServerError, repoError, inviteLink
-	}
+	inviteLink = a.TgInviteLink
 
 	return http.StatusOK, nil, inviteLink
 }
