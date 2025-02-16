@@ -111,6 +111,14 @@ func (b *Bot) Run() {
 					}
 
 					authorId := strconv.Itoa(int(update.Message.From.ID))
+
+					_, _ = mongoClient.Database("zadvizh").
+						Collection("employees").
+						UpdateOne(context.Background(),
+							bson.M{"tgid": authorId},
+							bson.M{"tgInviteLink": responseApi["invite_link"].(string)},
+						)
+
 					bodyRef := "author:" + authorId
 					ref := base64.StdEncoding.EncodeToString([]byte(bodyRef))
 					inviteLink := "https://zadvizh.tech/?ref=" + ref
