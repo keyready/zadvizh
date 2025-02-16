@@ -35,7 +35,7 @@ func GetMongoClient() (*mongo.Client, error) {
 			log.Fatalf("Ошибка пинга MongoDB: %v", pingErr.Error())
 		}
 
-		teachersData, readErr := ioutil.ReadFile("data/teachers.json")
+		teachersData, readErr := ioutil.ReadFile("/app/data/teachers.json")
 		if readErr != nil {
 			log.Fatalf("Ошибка чтения файла с данными преподавателей: %v", readErr.Error())
 		}
