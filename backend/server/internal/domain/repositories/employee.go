@@ -133,7 +133,7 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	}
 
 	var a models.Employee
-	_ = eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": authEmployee.Ref}).Decode(&a)
+	_ = eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.D{{"tgid", authEmployee.Ref}}).Decode(&a)
 
 	inviteLink = a.TgInviteLink
 	_, _ = eRepo.mongoDB.Collection("employees").

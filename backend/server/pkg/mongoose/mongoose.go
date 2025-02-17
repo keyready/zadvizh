@@ -22,7 +22,7 @@ var (
 
 func GetMongoClient() (*mongo.Client, error) {
 	mongoOnce.Do(func() {
-		mongoUri := "mongodb://admin:admin@mongodb:27017/zadvizh?ssl=false&authSource=admin"
+		mongoUri := "mongodb://zadvizh:wwGDSqseqDFFBDSS@mongodb:27017/zadvizh?ssl=false&authSource=admin"
 		clientOptions := options.Client().
 			ApplyURI(mongoUri)
 
