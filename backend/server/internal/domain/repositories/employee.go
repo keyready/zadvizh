@@ -92,15 +92,37 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	refTgId := strings.Split(string(refTgIdByte), ":")[1]
 	authEmployee.Ref = refTgId
 
-	if authEmployee.Firstname == "Валентин" {
+	if authEmployee.Firstname == "Валентин" && authEmployee.Lastname == "Кофанов" {
 		_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx,
-			bson.M{"firstname": "Валентин"},
-			authEmployee)
+			bson.D{{"firstname", "Валентин"}, {"lastname", "Кофанов"}},
+			bson.D{
+				{"$set", bson.D{
+					{"lastname", authEmployee.Lastname},
+					{"department", authEmployee.Department},
+					{"field", authEmployee.Field},
+					{"position", authEmployee.Position},
+					{"teamname", authEmployee.TeamName},
+					{"teamrole", authEmployee.TeamRole},
+					{"tgid", authEmployee.TgId},
+					{"ref", authEmployee.Ref},
+				}},
+			})
 	}
-	if authEmployee.Firstname == "Родион" {
+	if authEmployee.Firstname == "Родион" && authEmployee.Lastname == "Корчак" {
 		_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx,
-			bson.M{"firstname": "Родион"},
-			authEmployee)
+			bson.D{{"firstname", "Родион"}, {"lastname", "Корчак"}},
+			bson.D{
+				{"$set", bson.D{
+					{"lastname", authEmployee.Lastname},
+					{"department", authEmployee.Department},
+					{"field", authEmployee.Field},
+					{"position", authEmployee.Position},
+					{"teamname", authEmployee.TeamName},
+					{"teamrole", authEmployee.TeamRole},
+					{"tgid", authEmployee.TgId},
+					{"ref", authEmployee.Ref},
+				}}},
+		)
 	}
 
 	_, mongoErr := eRepo.mongoDB.Collection("employees").
@@ -114,7 +136,11 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	_ = eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": authEmployee.Ref}).Decode(&a)
 
 	inviteLink = a.TgInviteLink
-	_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx, bson.M{"tgid": authEmployee.Ref}, bson.M{"tgInviteLink": ""})
+	_, _ = eRepo.mongoDB.Collection("employees").
+		UpdateOne(ctx,
+			bson.D{{"tgid", authEmployee.Ref}},
+			bson.D{{"$set", bson.D{{"tgInviteLink", ""}}}},
+		)
 
 	return http.StatusOK, nil, inviteLink
 }

@@ -115,8 +115,8 @@ func (b *Bot) Run() {
 					_, _ = mongoClient.Database("zadvizh").
 						Collection("employees").
 						UpdateOne(context.Background(),
-							bson.M{"tgid": authorId},
-							bson.M{"tgInviteLink": responseApi["invite_link"].(string)},
+							bson.D{{"tgid", authorId}},
+							bson.D{{"$set", bson.D{{"tgInviteLink", responseApi["invite_link"].(string)}}}},
 						)
 
 					bodyRef := "author:" + authorId
