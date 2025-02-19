@@ -28,63 +28,53 @@ func NewTeacherRepositoryImpl(mongoDB *mongo.Database) *TeacherRepositoryImpl {
 }
 
 func (tRepo *TeacherRepositoryImpl) LikeDislike(likeDislike request.LikeDislike) (httpCode int, repoErr error) {
-	var update bson.M
-
 	teacherId, _ := bson.ObjectIDFromHex(likeDislike.TeacherID)
-	authorId, _ := bson.ObjectIDFromHex(likeDislike.AuthorID)
+
+	var author models.Employee
+	_ = tRepo.mongoDB.Collection("employees").
+		FindOne(context.Background(), bson.D{{"tgid", likeDislike.AuthorID}}).Decode(&author)
 
 	var teacher models.Teacher
 	_ = tRepo.mongoDB.Collection("teachers").
-		FindOne(context.TODO(), bson.M{"_id": teacherId}).Decode(&teacher)
+		FindOne(context.Background(), bson.D{{"_id", teacherId}}).Decode(&teacher)
 
 	switch likeDislike.Action {
 	case "like":
-		if !utils.Contains(teacher.Likes.Authors, authorId) {
-			update = bson.M{
-				"$inc":  bson.M{"likes.value": 1},
-				"$push": bson.M{"likes.authors": authorId},
-			}
+		if !utils.Contains(teacher.Likes.Authors, author.ID) {
+			teacher.Likes.Value += 1
+			teacher.Likes.Authors = append(teacher.Likes.Authors, author.ID)
 		} else {
-			update = bson.M{
-				"$inc":  bson.M{"likes.value": -1},
-				"$pull": bson.M{"likes.authors": authorId},
-			}
+			teacher.Likes.Value -= 1
+			teacher.Likes.Authors = utils.RemoveElement(author.ID, teacher.Likes.Authors)
 		}
 	case "dislike":
-		if !utils.Contains(teacher.Likes.Authors, authorId) {
-			update = bson.M{
-				"$inc":  bson.M{"dislikes.value": 1},
-				"$push": bson.M{"dislikes.authors": authorId},
-			}
+		if !utils.Contains(teacher.Dislikes.Authors, author.ID) {
+			teacher.Dislikes.Value += 1
+			teacher.Dislikes.Authors = append(teacher.Dislikes.Authors, author.ID)
 		} else {
-			update = bson.M{
-				"$inc":  bson.M{"dislikes.value": -1},
-				"$pull": bson.M{"dislikes.authors": authorId},
-			}
+			teacher.Dislikes.Value -= 1
+			teacher.Dislikes.Authors = utils.RemoveElement(author.ID, teacher.Dislikes.Authors)
 		}
 	}
 
-	_, mongoErr := tRepo.mongoDB.Collection("teachers").
-		UpdateOne(ctx, bson.M{"_id": teacherId}, update)
+	_, mongoErr := tRepo.mongoDB.Collection("teachers").ReplaceOne(ctx, bson.M{"_id": teacherId}, teacher)
 	if mongoErr != nil {
-		repoErr = fmt.Errorf("Ошибка лайка: %s", mongoErr.Error())
-		return http.StatusInternalServerError, repoErr
+		return http.StatusInternalServerError, fmt.Errorf("Ошибка лайка/дизлайка: %s", mongoErr.Error())
 	}
 
 	return http.StatusOK, nil
 }
 
-func (tRepo *TeacherRepositoryImpl) DislikeTeacher() {}
-
 func (tRepo *TeacherRepositoryImpl) WriteComment(newComment request.WriteNewComment) (httpCode int, repoErr error) {
-	authorId, _ := bson.ObjectIDFromHex(newComment.AuthorID)
+	var author models.Employee
+	_ = tRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": newComment.AuthorID}).Decode(&author)
 	teacherId, _ := bson.ObjectIDFromHex(newComment.TeacherID)
 
 	filter := bson.M{"_id": teacherId}
 	update := bson.M{
 		"$push": bson.M{
 			"comments": dto.Comment{
-				Author:    authorId,
+				Author:    author.ID,
 				Content:   newComment.Content,
 				CreatedAt: time.Now(),
 			},

@@ -17,7 +17,7 @@ func NewTeacherControllers(teacherUsecase usecases.TeacherUsecase) *TeacherContr
 
 func (tContr *TeacherController) LikeDislike(ctx *gin.Context) {
 	var likeDislike request.LikeDislike
-	authorId, _ := ctx.Get("authorId")
+	authorId, _ := ctx.Get("tgId")
 
 	likeDislike.AuthorID = authorId.(string)
 
@@ -38,6 +38,7 @@ func (tContr *TeacherController) LikeDislike(ctx *gin.Context) {
 
 func (tContr *TeacherController) WriteComment(ctx *gin.Context) {
 	var newComment request.WriteNewComment
+
 	authorID, _ := ctx.Get("tgId")
 	newComment.AuthorID = authorID.(string)
 

@@ -80,8 +80,12 @@ func GetMongoClient() (*mongo.Client, error) {
 		for _, t := range teachers {
 			t.ID = bson.NewObjectID()
 			t.Comments = []dto.Comment{}
-			t.Likes = dto.Like{}
-			t.Dislikes = dto.Dislike{}
+			t.Likes = dto.Like{
+				Authors: []bson.ObjectID{},
+			}
+			t.Dislikes = dto.Dislike{
+				Authors: []bson.ObjectID{},
+			}
 
 			var res bson.M
 			mongoErr := clientInstance.Database("zadvizh").
