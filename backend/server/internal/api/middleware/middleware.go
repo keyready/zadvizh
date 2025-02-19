@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
-	"os"
 )
 
 func TokenMiddleware() gin.HandlerFunc {
@@ -18,10 +18,11 @@ func TokenMiddleware() gin.HandlerFunc {
 		claims := jwt.MapClaims{}
 
 		_, err := jwt.ParseWithClaims(authHeader, &claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+			return []byte("IimULHg9FRS0XleGnPZo"), nil
 		})
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized,
+				gin.H{"error": fmt.Sprintf("Ошибка верификации токена: %s", err.Error())})
 			return
 		}
 

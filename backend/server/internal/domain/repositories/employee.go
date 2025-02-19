@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -42,7 +43,7 @@ func (eRepo *EmployeeRepositoryImpl) VerifyLink(link string) (check bool) {
 
 	tgId := strings.Split(string(decodedRef), ":")[1]
 	var res bson.M
-	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": tgId}).Decode(&res)
+	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.D{{"tgid", tgId}}).Decode(&res)
 	if mongoErr == mongo.ErrNoDocuments {
 		return false
 	}
@@ -51,7 +52,7 @@ func (eRepo *EmployeeRepositoryImpl) VerifyLink(link string) (check bool) {
 
 func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) (check bool) {
 	var result bson.M
-	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"token": tgId}).Decode(&result)
+	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": tgId}).Decode(&result)
 	if mongoErr == mongo.ErrNoDocuments {
 		return false
 	}
@@ -88,44 +89,19 @@ func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []
 }
 
 func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error, inviteLink string) {
-	refTgIdByte, _ := base64.StdEncoding.DecodeString(authEmployee.Ref)
-	refTgId := strings.Split(string(refTgIdByte), ":")[1]
-	authEmployee.Ref = refTgId
+	//refTgIdByte, _ := base64.StdEncoding.DecodeString(authEmployee.Ref)
+	//refTgId := strings.Split(string(refTgIdByte), ":")[1]
+	//authEmployee.Ref = refTgId
 
-	if authEmployee.Firstname == "Валентин" && authEmployee.Lastname == "Кофанов" {
-		_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx,
-			bson.D{{"firstname", "Валентин"}, {"lastname", "Кофанов"}},
-			bson.D{
-				{"$set", bson.D{
-					{"lastname", authEmployee.Lastname},
-					{"department", authEmployee.Department},
-					{"field", authEmployee.Field},
-					{"position", authEmployee.Position},
-					{"teamname", authEmployee.TeamName},
-					{"teamrole", authEmployee.TeamRole},
-					{"tgid", authEmployee.TgId},
-					{"ref", authEmployee.Ref},
-				}},
-			})
-	}
-	if authEmployee.Firstname == "Родион" && authEmployee.Lastname == "Корчак" {
-		_, _ = eRepo.mongoDB.Collection("employees").UpdateOne(ctx,
-			bson.D{{"firstname", "Родион"}, {"lastname", "Корчак"}},
-			bson.D{
-				{"$set", bson.D{
-					{"lastname", authEmployee.Lastname},
-					{"department", authEmployee.Department},
-					{"field", authEmployee.Field},
-					{"position", authEmployee.Position},
-					{"teamname", authEmployee.TeamName},
-					{"teamrole", authEmployee.TeamRole},
-					{"tgid", authEmployee.TgId},
-					{"ref", authEmployee.Ref},
-				}}},
-		)
+	var insertEmp bson.M
+	mongoErr := eRepo.mongoDB.Collection("employees").
+		FindOne(ctx, bson.D{{"tgid", authEmployee.TgId}}).Decode(&insertEmp)
+
+	if !errors.Is(mongoErr, mongo.ErrNoDocuments) {
+		return http.StatusInternalServerError, fmt.Errorf("Данный пользователь уже зарегистрирован"), inviteLink
 	}
 
-	_, mongoErr := eRepo.mongoDB.Collection("employees").
+	_, mongoErr = eRepo.mongoDB.Collection("employees").
 		InsertOne(ctx, authEmployee)
 	if mongoErr != nil {
 		repoError = fmt.Errorf("Ошибка добавления нового участника: %s", mongoErr.Error())

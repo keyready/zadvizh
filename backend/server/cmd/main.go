@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"server/internal/api/routers"
 	"server/pkg/mongoose"
-	"time"
 )
 
 func main() {
@@ -13,11 +12,8 @@ func main() {
 	appHandlers := routers.AppRouters(mongoClient.Database("zadvizh"))
 
 	server := &http.Server{
-		WriteTimeout: time.Second * 120,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
-		Addr:         ":5000",
-		Handler:      appHandlers,
+		Addr:    ":5000",
+		Handler: appHandlers,
 	}
 
 	log.Println("Сервер запущен на порту 5000")

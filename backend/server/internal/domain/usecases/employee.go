@@ -5,7 +5,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"net/http"
-	"os"
 	"server/internal/domain/repositories"
 	"server/internal/domain/types/enum/field"
 	"server/internal/domain/types/models"
@@ -46,7 +45,7 @@ func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, 
 		"tgId": tgId,
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, _ := t.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+	tokenString, _ := t.SignedString([]byte("IimULHg9FRS0XleGnPZo"))
 
 	return http.StatusOK, nil, tokenString
 }
