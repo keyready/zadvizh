@@ -69,13 +69,14 @@ export const RegisterPage = () => {
                         },
                     });
 
+                    navigate('/rating');
+
                     if (result.ok) {
                         window.open(
                             (await result.json()).inviteLink,
                             '_blank',
                             'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
                         );
-                        navigate('/rating');
                     }
                 } catch (e) {
                     alert(e);
