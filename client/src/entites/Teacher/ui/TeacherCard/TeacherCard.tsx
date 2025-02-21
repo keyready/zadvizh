@@ -83,6 +83,8 @@ export const TeacherCard = (props: TeacherCardProps) => {
                     'Authorization': userToken || '',
                 },
             });
+
+            setComment('');
         } catch (e) {
             alert('Что-то сломалось ' + e);
         } finally {

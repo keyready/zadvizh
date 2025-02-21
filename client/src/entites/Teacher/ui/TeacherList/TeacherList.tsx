@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector } from 'react-redux';
+import { Input } from '@heroui/input';
 
 import { Teacher } from '../../model/Teacher';
 import { TeacherCard } from '../TeacherCard/TeacherCard';
@@ -18,6 +19,8 @@ export const TeachersList = (props: TeachersListProps) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [teachers, setTeachers] = useState<Teacher[]>([]);
+
+    const [search, setSearch] = useState<string>('');
 
     const handleFetchTeachers = async () => {
         try {
@@ -62,9 +65,21 @@ export const TeachersList = (props: TeachersListProps) => {
 
     return (
         <div className={'flex w-full flex-col gap-3 ' + className}>
-            {teachers.map((t) => (
-                <TeacherCard onListUpdate={handleFetchTeachers} teacher={t} key={t.id} />
-            ))}
+            <div className="mb-5 flex w-full items-end justify-end">
+                <Input
+                    value={search}
+                    onValueChange={setSearch}
+                    placeholder="Поиск по фамилии"
+                    classNames={{ inputWrapper: 'bg-opacity-20' }}
+                    className="w-3/5"
+                />
+            </div>
+
+            {teachers
+                .filter((t) => t.lastname.toLowerCase().includes((search || '').toLowerCase()))
+                .map((t) => (
+                    <TeacherCard onListUpdate={handleFetchTeachers} teacher={t} key={t.id} />
+                ))}
         </div>
     );
 };
