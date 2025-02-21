@@ -1,10 +1,21 @@
 [
   {
     "firstname": "Валентин",
+    "lastname": "Кофанов",
+    "department": "611/11",
+    "field": "dev",
+    "position": "back",
+    "teamName":"NexusX Team",
+    "teamRole": "part",
     "tgid": "1859211428"
   },
   {
     "firstname": "Родион",
+    "department": "611/11",
+    "field": "dev",
+    "position": "front",
+    "teamName":"NexusX Team",
+    "teamRole": "cap",
     "tgid": "494363856"
   }
 ]
