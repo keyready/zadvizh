@@ -74,6 +74,7 @@ export const RegisterPage = () => {
                             'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
                         );
                         window.location.href = '/rating';
+                        window.location.reload();
                     }
                 } catch (e) {
                     alert(e);
