@@ -29,7 +29,7 @@ export const TeacherCard = (props: TeacherCardProps) => {
             likes: teacher.likes.authors.includes(userId),
             dislikes: teacher.dislikes.authors.includes(userId),
         };
-    }, []);
+    }, [teacher, userId]);
 
     const handleDislikePress = useCallback(async () => {
         setIsLoading(true);
@@ -130,47 +130,48 @@ export const TeacherCard = (props: TeacherCardProps) => {
                 </Button>
             </div>
 
-            {hasAuthorPromoted.dislikes ||
-                (hasAuthorPromoted.likes && (
-                    <div className="mt-4 flex flex-col gap-2">
-                        <h2>Вы можете написать комментарий</h2>
-                        <Textarea
-                            value={comment}
-                            onValueChange={setComment}
-                            endContent={
-                                <Button
-                                    onPress={handleSendComment}
-                                    color="success"
-                                    isDisabled={!comment}
-                                    variant="bordered"
-                                >
-                                    <RiSendPlane2Line />
-                                </Button>
-                            }
-                            classNames={{
-                                inputWrapper: 'h-auto',
-                            }}
-                            maxRows={10}
-                            variant="bordered"
-                            placeholder="Ваш комментарий для преподавателя"
-                        />
-                    </div>
-                ))}
+            {(hasAuthorPromoted.dislikes || hasAuthorPromoted.likes) && (
+                <div className="mt-4 flex flex-col gap-2">
+                    <h2>Вы можете написать комментарий</h2>
+                    <Textarea
+                        value={comment}
+                        onValueChange={setComment}
+                        endContent={
+                            <Button
+                                onPress={handleSendComment}
+                                color="success"
+                                isDisabled={!comment}
+                                variant="bordered"
+                            >
+                                <RiSendPlane2Line />
+                            </Button>
+                        }
+                        classNames={{
+                            inputWrapper: 'h-auto',
+                        }}
+                        maxRows={10}
+                        variant="bordered"
+                        placeholder="Ваш комментарий для преподавателя"
+                    />
+                </div>
+            )}
 
             {teacher?.comments?.length ? (
                 <div className="mt-5">
                     <button className="mb-3" onClick={() => setIsCommentsVisible((ps) => !ps)}>
                         {isCommentsVisible ? 'Скрыть' : 'Показать'} комментарии
                     </button>
-                    {isCommentsVisible &&
-                        teacher?.comments.map((com) => (
-                            <div key={com.id} className="rounded-md border-1 border-white p-4">
-                                <p className="opacity-40">
-                                    {new Date(com.createdAt).toLocaleDateString()}
-                                </p>
-                                <h1>{com.content}</h1>
-                            </div>
-                        ))}
+                    <div className="flex w-full flex-col gap-4">
+                        {isCommentsVisible &&
+                            teacher?.comments.map((com) => (
+                                <div key={com.id} className="rounded-md border-1 border-white p-4">
+                                    <p className="opacity-40">
+                                        {new Date(com.createdAt).toLocaleDateString()}
+                                    </p>
+                                    <h1>{com.content}</h1>
+                                </div>
+                            ))}
+                    </div>
                 </div>
             ) : null}
         </div>
