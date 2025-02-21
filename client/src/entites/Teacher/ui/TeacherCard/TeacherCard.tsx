@@ -10,10 +10,11 @@ import { RootState } from '../../../../app/store/store.ts';
 interface TeacherCardProps {
     className?: string;
     teacher: Teacher;
+    onListUpdate: () => void;
 }
 
 export const TeacherCard = (props: TeacherCardProps) => {
-    const { teacher, className } = props;
+    const { teacher, className, onListUpdate } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isCommentsVisible, setIsCommentsVisible] = useState<boolean>(false);
@@ -36,25 +37,6 @@ export const TeacherCard = (props: TeacherCardProps) => {
         try {
             await fetch('https://zadvizh.tech/api/v1/teachers/like', {
                 method: 'post',
-                body: JSON.stringify({ teacherId: teacher.id, action: 'like' }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': userToken || '',
-                },
-            });
-        } catch (e) {
-            alert('Что-то сломалось ' + e);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [userToken, teacher?.id]);
-
-    const handleLikePress = useCallback(async () => {
-        setIsLoading(true);
-
-        try {
-            await fetch('https://zadvizh.tech/api/v1/teachers/like', {
-                method: 'post',
                 body: JSON.stringify({ teacherId: teacher.id, action: 'dislike' }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,9 +46,30 @@ export const TeacherCard = (props: TeacherCardProps) => {
         } catch (e) {
             alert('Что-то сломалось ' + e);
         } finally {
+            onListUpdate();
             setIsLoading(false);
         }
-    }, [userToken, teacher?.id]);
+    }, [onListUpdate, userToken, teacher?.id]);
+
+    const handleLikePress = useCallback(async () => {
+        setIsLoading(true);
+
+        try {
+            await fetch('https://zadvizh.tech/api/v1/teachers/like', {
+                method: 'post',
+                body: JSON.stringify({ teacherId: teacher.id, action: 'like' }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': userToken || '',
+                },
+            });
+        } catch (e) {
+            alert('Что-то сломалось ' + e);
+        } finally {
+            onListUpdate();
+            setIsLoading(false);
+        }
+    }, [onListUpdate, userToken, teacher?.id]);
 
     const handleSendComment = useCallback(async () => {
         setIsLoading(true);
@@ -83,9 +86,10 @@ export const TeacherCard = (props: TeacherCardProps) => {
         } catch (e) {
             alert('Что-то сломалось ' + e);
         } finally {
+            onListUpdate();
             setIsLoading(false);
         }
-    }, [comment, userToken, teacher?.id]);
+    }, [onListUpdate, comment, userToken, teacher?.id]);
 
     return (
         <div

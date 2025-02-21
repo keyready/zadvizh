@@ -15,7 +15,7 @@ export const UserSlice = createSlice({
     name: 'counter',
     initialState,
     reducers: {
-        setUserTgId: (state, action: PayloadAction<string>) => {
+        setUserId: (state, action: PayloadAction<string>) => {
             state.id = action.payload;
         },
         setUserAccessToken: (state, action: PayloadAction<string>) => {
@@ -24,5 +24,5 @@ export const UserSlice = createSlice({
     },
 });
 
-export const { setUserTgId, setUserAccessToken } = UserSlice.actions;
+export const { setUserId, setUserAccessToken } = UserSlice.actions;
 export const UserReducer = UserSlice.reducer;

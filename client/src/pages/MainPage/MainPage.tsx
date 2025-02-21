@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Spinner } from '@heroui/react';
 import { useDispatch } from 'react-redux';
 
-import { setUserTgId } from '../../entites/User';
+import { setUserId } from '../../entites/User';
 import { setUserAccessToken } from '../../entites/User/model/UserSlice.ts';
 
 export const MainPage = () => {
@@ -27,7 +27,7 @@ export const MainPage = () => {
             }
 
             const responseData = await result.json();
-            dispatch(setUserTgId(data.id.toString()));
+            dispatch(setUserId(responseData.id));
             dispatch(setUserAccessToken(responseData.accessToken));
             navigate('/hierarchy');
         } catch (e) {
@@ -120,7 +120,7 @@ export const MainPage = () => {
                     <LoginButton
                         cornerRadius={10}
                         onAuthCallback={(data) => {
-                            dispatch(setUserTgId(data.id.toString()));
+                            dispatch(setUserId(data.id.toString()));
                             navigate(`/auth/continue?ref=${params.get('ref') || ''}&un=${data.id}`);
                         }}
                         botUsername={import.meta.env.VITE_BOT_USERNAME}

@@ -1,1 +1,1 @@
-export { setUserTgId, UserSlice, UserReducer } from './model/UserSlice';
+export { setUserId, UserSlice, UserReducer } from './model/UserSlice';

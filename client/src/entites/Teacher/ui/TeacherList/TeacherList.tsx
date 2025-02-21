@@ -19,8 +19,8 @@ export const TeachersList = (props: TeachersListProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [teachers, setTeachers] = useState<Teacher[]>([]);
 
-    useEffect(() => {
-        const fetchTeachers = async () => {
+    const handleFetchTeachers = async () => {
+        try {
             const result = await fetch('https://zadvizh.tech/api/v1/teachers', {
                 headers: {
                     Authorization: userToken || '',
@@ -30,11 +30,6 @@ export const TeachersList = (props: TeachersListProps) => {
             if (result.ok) {
                 setTeachers(await result.json());
             }
-        };
-
-        try {
-            setIsLoading(true);
-            fetchTeachers();
         } catch (e) {
             console.log(e);
             alert('Что-то сломалось ');
@@ -42,6 +37,11 @@ export const TeachersList = (props: TeachersListProps) => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    useEffect(() => {
+        setIsLoading(true);
+        handleFetchTeachers();
     }, []);
 
     if (isLoading) {
@@ -63,7 +63,7 @@ export const TeachersList = (props: TeachersListProps) => {
     return (
         <div className={'flex w-full flex-col gap-3 ' + className}>
             {teachers.map((t) => (
-                <TeacherCard teacher={t} key={t.id} />
+                <TeacherCard onListUpdate={handleFetchTeachers} teacher={t} key={t.id} />
             ))}
         </div>
     );
