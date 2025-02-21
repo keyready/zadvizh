@@ -95,7 +95,7 @@ export const FlowTreeSearchPanel = (props: FlowTreeSearchPanelProps) => {
     }, [focusedIndex]);
 
     return (
-        <div className="absolute left-2 top-5 z-50 max-h-96 w-2/6 rounded-lg bg-primary bg-opacity-40 p-4">
+        <div className="absolute left-2 top-16 z-50 max-h-96 rounded-lg bg-primary bg-opacity-40 p-4 lg:w-2/6">
             <div className="relative flex items-center justify-start gap-4">
                 <Input
                     startContent={<RiSearchLine className="opacity-40" />}
@@ -121,7 +121,7 @@ export const FlowTreeSearchPanel = (props: FlowTreeSearchPanelProps) => {
                         <DropdownTrigger>
                             <Button
                                 className={
-                                    'w-64 bg-primary bg-opacity-50 ' +
+                                    'bg-primary bg-opacity-50 lg:w-64 ' +
                                     'data-[hover=true]:bg-primary data-[hover=true]:bg-opacity-80' +
                                     'group-data-[focus=true]:bg-primary'
                                 }

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector } from 'react-redux';
 
-import { Teacher } from '../../model/Teacher.ts';
-import { TeacherCard } from '../TeacherCard/TeacherCard.tsx';
-import { RootState } from '../../../../app/store/store.ts';
+import { Teacher } from '../../model/Teacher';
+import { TeacherCard } from '../TeacherCard/TeacherCard';
+import { RootState } from '../../../../app/store/store';
 
 interface TeachersListProps {
     className?: string;
@@ -44,29 +44,10 @@ export const TeachersList = (props: TeachersListProps) => {
         }
     }, []);
 
-    // const teachers1: Teacher[] = [
-    //     {
-    //         id: 'asdasd',
-    //         firstname: 'Денис',
-    //         likes: { value: 21, authors: [] },
-    //         dislikes: { value: 2, authors: [] },
-    //         lastname: 'Бирюков',
-    //         comments: [
-    //             {
-    //                 id: '1`213',
-    //                 content: 'Это комментарий',
-    //                 author: 'keyready',
-    //                 createdAt: new Date(),
-    //             },
-    //         ],
-    //         middlename: 'Николаевич',
-    //     },
-    // ];
-
     if (isLoading) {
         return (
             <div>
-                <h1 className="text-3xl italic opacity-40">Загрузка данных...</h1>
+                <h1 className="text-xl italic opacity-40 lg:text-3xl">Загрузка данных...</h1>
             </div>
         );
     }
@@ -74,7 +55,7 @@ export const TeachersList = (props: TeachersListProps) => {
     if (!teachers?.length) {
         return (
             <div>
-                <h1 className="text-3xl italic opacity-40">Ничего не нашли...(</h1>
+                <h1 className="text-xl italic opacity-40 lg:text-3xl">Ничего не нашли...(</h1>
             </div>
         );
     }

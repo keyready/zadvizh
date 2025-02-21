@@ -6,14 +6,14 @@ import { Spinner } from '@heroui/react';
 import { useNavigate } from 'react-router';
 import { useSelector } from 'react-redux';
 
-import { RootGroup } from '../FlowNode/RootGroup.tsx';
-import { SubrootGroup } from '../FlowNode/SubrootGroup.tsx';
-import { RootState } from '../../app/store/store.ts';
+import { RootGroup } from '../FlowNode/RootGroup';
+import { SubrootGroup } from '../FlowNode/SubrootGroup';
+import { RootState } from '../../app/store/store';
 
-import { SourceNodesMap, transformData } from './lib/generateNodes.ts';
-import { LeafDrawer } from './LeafDrawer.tsx';
-import { treeSearch } from './lib/treeSearch.ts';
-import { FlowTreeSearchPanel } from './FlowTreeSearchPanel.tsx';
+import { SourceNodesMap, transformData } from './lib/generateNodes';
+import { LeafDrawer } from './LeafDrawer';
+import { treeSearch } from './lib/treeSearch';
+import { FlowTreeSearchPanel } from './FlowTreeSearchPanel';
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
