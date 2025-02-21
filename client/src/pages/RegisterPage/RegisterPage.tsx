@@ -4,6 +4,10 @@ import { Progress, Radio, RadioGroup } from '@heroui/react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Navigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+
+import { setUserId } from '../../entites/User';
+import { setUserAccessToken } from '../../entites/User/model/UserSlice.ts';
 
 type FieldType = 'dev' | 'sec' | 'devops' | 'science' | 'org';
 
@@ -24,6 +28,7 @@ export const RegisterPage = () => {
     const [params] = useSearchParams();
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const ref = useMemo<string>(() => params.get('ref') || '', []);
     const userId = useMemo<string>(() => params.get('un') || '', []);
@@ -76,15 +81,27 @@ export const RegisterPage = () => {
                             'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
                         );
                     }
+
+                    const accessResult = await fetch(
+                        `https://zadvizh.tech/api/v1/get_access?tgId=${newUserForm.tgId}`,
+                    );
+
+                    if (!accessResult.ok) {
+                        throw new Error(`HTTP error! Status: ${accessResult.status}`);
+                    }
+
+                    const responseData = await accessResult.json();
+                    dispatch(setUserId(responseData.id));
+                    dispatch(setUserAccessToken(responseData.accessToken));
+                    navigate('/hierarchy');
                 } catch (e) {
                     alert(e);
                 } finally {
                     setIsLoading(false);
-                    navigate('/rating');
                 }
             }
         },
-        [commPassword, newUserForm, step],
+        [commPassword, newUserForm, step, dispatch],
     );
 
     const showButtonBeDisabled = useMemo(() => {
