@@ -7,7 +7,8 @@
     "position": "back",
     "teamName":"NexusX Team",
     "teamRole": "part",
-    "tgid": "1859211428"
+    "tgid": "1859211428",
+    "publication": true
   },
   {
     "firstname": "Родион",
@@ -17,7 +18,8 @@
     "position": "front",
     "teamName":"NexusX Team",
     "teamRole": "cap",
-    "tgid": "494363856"
+    "tgid": "494363856",
+    "publication": true
   },
   {
     "firstname": "Денис",
@@ -27,7 +29,8 @@
     "position": "",
     "teamName": "",
     "teamRole": "",
-    "tgid": ""
+    "tgid": "",
+    "publication": true
   },
   {
     "firstname": "Андрей",
@@ -37,7 +40,8 @@
     "position": "",
     "teamName": "",
     "teamRole": "",
-    "tgid": ""
+    "tgid": "",
+    "publication": true
   },
   {
     "firstname": "Олег",
@@ -47,7 +51,8 @@
     "position":"",
     "teamName": "",
     "teamRole": "",
-    "tgid": ""
+    "tgid": "",
+    "publication": true
   },
   {
     "firstname": "Роман",
@@ -57,6 +62,7 @@
     "position":"",
     "teamName": "",
     "teamRole": "",
-    "tgid": ""
+    "tgid": "",
+    "publication": true
   }
 ]

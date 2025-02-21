@@ -199,7 +199,7 @@ func (eUsecase *EmployeeUsecaseImpl) GetAllEmployers() (httpCode int, usecaseErr
 						response.Node{
 							ID: uuid.NewString(),
 							Data: response.Data{
-								Label: RO.Lastname,
+								Label: RO.Lastname + " " + RO.Firstname,
 							},
 							Children: devopsNodes,
 						},
@@ -215,7 +215,7 @@ func (eUsecase *EmployeeUsecaseImpl) GetAllEmployers() (httpCode int, usecaseErr
 						response.Node{
 							ID: uuid.NewString(),
 							Data: response.Data{
-								Label: OA.Lastname,
+								Label: OA.Lastname + " " + OA.Firstname,
 							},
 							Children: sciNodes,
 						},

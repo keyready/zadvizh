@@ -92,8 +92,6 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	refTgId := strings.Split(string(refTgIdByte), ":")[1]
 	authEmployee.Ref = refTgId
 
-	authEmployee.Publication = true
-
 	if authEmployee.TeamName == "" {
 		authEmployee.TeamName = "Без команды"
 	}

@@ -71,6 +71,11 @@ func (b *Bot) Run() {
 					log.Fatalf("Ошибка отправки приветствия: %s", sendErr.Error())
 				}
 				lastKnownId = lastEmployee.ID
+
+				employeesCollection.FindOneAndUpdate(context.TODO(),
+					bson.M{"_id": lastEmployee.ID},
+					bson.M{"$set": bson.M{"publication": true}},
+				)
 			}
 			time.Sleep(time.Second * 5)
 		}

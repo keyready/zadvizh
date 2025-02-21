@@ -5,28 +5,28 @@
     "middlename": "Владимирович"
   },
   {
-    "firstname": "Моргунов",
-    "lastname": "Владимир",
+    "firstname": "Владимир",
+    "lastname": "Моргунов",
     "middlename": "Михайлович"
   },
   {
-    "firstname": "Ломако",
-    "lastname": "Александр",
+    "firstname": "Александр",
+    "lastname": "Ломако",
     "middlename": "Григорьевич"
   },
   {
-    "firstname": "Компаниец",
-    "lastname": "Радион",
+    "firstname": "Радион",
+    "lastname": "Компаниец",
     "middlename": "Иванович"
   },
   {
-    "firstname": "Якунин",
-    "lastname": "Владимир",
+    "firstname": "Владимир",
+    "lastname": "Якунин",
     "middlename": "Иванович"
   },
   {
-    "firstname": "Сабиров",
-    "lastname": "Тимур",
+    "firstname": "Тимур",
+    "lastname": "Сабиров",
     "middlename": "Римович"
   },
   {
@@ -35,13 +35,13 @@
     "middlename": "Михайлович"
   },
   {
-    "firstname": "Бугаев",
-    "lastname": "Иван",
+    "firstname": "Иван",
+    "lastname": "Бугаев",
     "middlename": "Алексеевич"
   },
   {
-    "firstname": "Данилов",
-    "lastname": "Виталий",
+    "firstname": "Виталий",
+    "lastname": "Данилов",
     "middlename": "Владимирович"
   },
   {
@@ -58,10 +58,5 @@
     "firstname": "Павел",
     "lastname": "Глыбовский",
     "middlename": "Анатольевич"
-  },
-  {
-    "firstname": "Т",
-    "lastname": "Тельбух",
-    "middlename": "В"
   }
 ]
