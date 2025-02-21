@@ -2,7 +2,7 @@ import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Progress, Radio, RadioGroup } from '@heroui/react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Navigate } from 'react-router';
 
 type FieldType = 'dev' | 'sec' | 'devops' | 'science' | 'org';
@@ -22,6 +22,8 @@ interface User {
 
 export const RegisterPage = () => {
     const [params] = useSearchParams();
+
+    const navigate = useNavigate();
 
     const ref = useMemo<string>(() => params.get('ref') || '', []);
     const userId = useMemo<string>(() => params.get('un') || '', []);
@@ -73,6 +75,7 @@ export const RegisterPage = () => {
                             '_blank',
                             'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
                         );
+                        navigate('/rating');
                     }
                 } catch (e) {
                     alert(e);
@@ -151,7 +154,7 @@ export const RegisterPage = () => {
                                 }))
                             }
                             value={newUserForm.department}
-                            label="Отдел"
+                            label="Отдел (учебная группа)"
                         />
                     </>
                 );
