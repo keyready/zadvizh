@@ -2,6 +2,7 @@ package main
 
 import (
 	mongoosepackage "bot/mongoose"
+	"bot/utils"
 	"context"
 	"encoding/base64"
 	"encoding/json"
@@ -52,15 +53,18 @@ func (b *Bot) Run() {
 				continue
 			}
 
+			field := utils.FindField(lastEmployee.Field)
+			position := utils.FindPosition(lastEmployee.Position)
+
 			if lastKnownId != lastEmployee.ID {
 				msg := tgbotapi.NewMessage(-1002438510106, "")
 				msg.Text = fmt.Sprintf(`В нашем коллективе пополнение!
 	Встречаем %s %s (%s)!
-	Род деятельности: %s на позиции %s`, lastEmployee.Firstname,
+	Род деятельности: %s %s`, lastEmployee.Firstname,
 					lastEmployee.Lastname,
 					lastEmployee.Department,
-					lastEmployee.Field,
-					lastEmployee.Position)
+					field,
+					position)
 
 				_, sendErr := b.Bot.Send(msg)
 				if sendErr != nil {

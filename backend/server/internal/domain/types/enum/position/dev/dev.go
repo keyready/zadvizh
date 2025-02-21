@@ -1,8 +1,12 @@
 package dev
 
-const (
-	FRONT  string = "front"
-	BACK   string = "back"
-	ML     string = "ml"
-	DESIGN string = "design"
+var (
+	FRONT   string = "Фронтенд"
+	BACK    string = "Бекенд"
+	ML      string = "Машинное обучение"
+	DESIGN  string = "Дизайн(UI/UX)"
+	FULL    string = "Фуллстак"
+	QA      string = "QA"
+	GAMEDEV string = "Разработчик игр"
+	MOBILE  string = "Мобильный разработчик"
 )

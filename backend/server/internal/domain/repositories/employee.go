@@ -22,7 +22,7 @@ type EmployeeRepository interface {
 	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error, inviteLink string)
 	GetAllEmployees() (httpCode int, repoError error, employees []models.Employee)
 	GetAllTeamNames(field string) (teamNames []string)
-	GetAccessToken(tgId string) (check bool)
+	GetAccessToken(tgId string) (check bool, userId bson.ObjectID)
 	VerifyLink(tgId string) (check bool)
 }
 
@@ -49,13 +49,13 @@ func (eRepo *EmployeeRepositoryImpl) VerifyLink(link string) (check bool) {
 	return true
 }
 
-func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) (check bool) {
-	var result bson.M
-	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": tgId}).Decode(&result)
+func (eRepo *EmployeeRepositoryImpl) GetAccessToken(tgId string) (check bool, userId bson.ObjectID) {
+	var findUser models.Employee
+	mongoErr := eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.M{"tgid": tgId}).Decode(&findUser)
 	if mongoErr == mongo.ErrNoDocuments {
-		return false
+		return false, userId
 	}
-	return true
+	return true, findUser.ID
 }
 
 func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []string) {
@@ -92,6 +92,12 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	refTgId := strings.Split(string(refTgIdByte), ":")[1]
 	authEmployee.Ref = refTgId
 
+	authEmployee.Publication = true
+
+	if authEmployee.TeamName == "" {
+		authEmployee.TeamName = "Без команды"
+	}
+
 	count, _ := eRepo.mongoDB.Collection("employees").
 		CountDocuments(ctx, bson.D{{"tgid", authEmployee.TgId}})
 	if count > 0 {
@@ -114,7 +120,7 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 		UpdateOne(ctx,
 			bson.D{{"tgid", authEmployee.Ref}},
 			bson.D{{"$set", bson.D{
-				{"tgInviteLink", ""}, {"publication", true}}}},
+				{"tgInviteLink", ""}}}},
 		)
 
 	return http.StatusOK, nil, inviteLink
@@ -126,7 +132,7 @@ func (eRepo *EmployeeRepositoryImpl) GetAllEmployees() (httpCode int, repoErr er
 	defer cur.Close(ctx)
 
 	if mongoErr != nil {
-		repoErr = fmt.Errorf("Ошибка извлечения всех участнико: %s", mongoErr.Error())
+		repoErr = fmt.Errorf("Ошибка извлечения всех участников: %s", mongoErr.Error())
 		return http.StatusInternalServerError, repoErr, nil
 	}
 

@@ -15,7 +15,7 @@ import (
 type EmployeeUsecase interface {
 	AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, usecaseError error, inviteLink string)
 	GetAllEmployers() (httpCode int, usecaseError error, three response.Node)
-	GetAccessToken(tgId string) (httpCode int, usecaseError error, token string)
+	GetAccessToken(tgId string) (httpCode int, usecaseError error, token response.Token)
 	VerifyLink(tgId string) (httpCode int, usecaseError error)
 }
 
@@ -35,10 +35,10 @@ func (eUsecase *EmployeeUsecaseImpl) VerifyLink(tgId string) (httpCode int, usec
 	return http.StatusOK, nil
 }
 
-func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, usecaseError error, token string) {
-	check := eUsecase.employeeRepo.GetAccessToken(tgId)
+func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, usecaseError error, tokenData response.Token) {
+	check, userId := eUsecase.employeeRepo.GetAccessToken(tgId)
 	if !check {
-		return http.StatusUnauthorized, fmt.Errorf("Данный пользователь не авторизован"), ""
+		return http.StatusUnauthorized, fmt.Errorf("Данный пользователь не авторизован"), tokenData
 	}
 
 	claims := jwt.MapClaims{
@@ -47,7 +47,12 @@ func (eUsecase *EmployeeUsecaseImpl) GetAccessToken(tgId string) (httpCode int, 
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ := t.SignedString([]byte("IimULHg9FRS0XleGnPZo"))
 
-	return http.StatusOK, nil, tokenString
+	tokenData = response.Token{
+		AccessToken: tokenString,
+		ID:          userId,
+	}
+
+	return http.StatusOK, nil, tokenData
 }
 
 func (eUsecase *EmployeeUsecaseImpl) GetAllEmployers() (httpCode int, usecaseError error, three response.Node) {
@@ -157,14 +162,14 @@ func (eUsecase *EmployeeUsecaseImpl) GetAllEmployers() (httpCode int, usecaseErr
 
 	three.ID = uuid.NewString()
 	three.Data = response.Data{
-		Label:     DN.Lastname,
+		Label:     DN.Lastname + " " + DN.Firstname,
 		DataLabel: field.ORG,
 	}
 	three.Children = []response.Node{
 		response.Node{
 			ID: uuid.NewString(),
 			Data: response.Data{
-				Label:     AS.Lastname,
+				Label:     AS.Lastname + " " + AS.Firstname,
 				DataLabel: field.ORG,
 			},
 			Children: []response.Node{

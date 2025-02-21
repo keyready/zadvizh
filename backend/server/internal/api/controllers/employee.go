@@ -30,13 +30,13 @@ func (eCont *EmployeeControllers) VerifyLink(ctx *gin.Context) {
 func (eCont *EmployeeControllers) GetAccessToken(ctx *gin.Context) {
 	tgId := ctx.Query("tgId")
 
-	httpCode, contrErr, token := eCont.employeeUsecase.GetAccessToken(tgId)
+	httpCode, contrErr, tokenData := eCont.employeeUsecase.GetAccessToken(tgId)
 	if contrErr != nil {
 		ctx.AbortWithStatusJSON(httpCode, contrErr.Error())
 		return
 	}
 
-	ctx.JSON(httpCode, gin.H{"accessToken": token})
+	ctx.JSON(httpCode, tokenData)
 }
 
 func (eCont *EmployeeControllers) GetAllEmployers(ctx *gin.Context) {

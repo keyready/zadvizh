@@ -1,12 +1,11 @@
 package sec
 
-const (
+var (
 	WEB      string = "web"
-	CRYPTO   string = "crypto"
-	PWN      string = "pwn"
-	FORENCIS string = "forencis"
-	ADMIN    string = "admin"
-	STEGANO  string = "stegano"
-	OSINT    string = "osint"
-	JOY      string = "joy"
+	CRYPTO   string = "Crypto"
+	PWN      string = "PWN"
+	FORENCIS string = "Forensic"
+	ADMIN    string = "Администрирование/сети"
+	OSINT    string = "OSINT"
+	JOY      string = "JOY"
 )

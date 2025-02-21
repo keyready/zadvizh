@@ -11,11 +11,52 @@
   },
   {
     "firstname": "Родион",
+    "lastname": "Корчак",
     "department": "611/11",
     "field": "dev",
     "position": "front",
     "teamName":"NexusX Team",
     "teamRole": "cap",
     "tgid": "494363856"
+  },
+  {
+    "firstname": "Денис",
+    "lastname": "Бирюков",
+    "department": "61",
+    "field": "org",
+    "position": "",
+    "teamName": "",
+    "teamRole": "",
+    "tgid": ""
+  },
+  {
+    "firstname": "Андрей",
+    "lastname": "Дудкин",
+    "department": "61",
+    "field": "org",
+    "position": "",
+    "teamName": "",
+    "teamRole": "",
+    "tgid": ""
+  },
+  {
+    "firstname": "Олег",
+    "lastname": "Мишуков",
+    "department":"61",
+    "field": "",
+    "position":"",
+    "teamName": "",
+    "teamRole": "",
+    "tgid": ""
+  },
+  {
+    "firstname": "Роман",
+    "lastname": "Крюков",
+    "department":"61",
+    "field": "",
+    "position":"",
+    "teamName": "",
+    "teamRole": "",
+    "tgid": ""
   }
 ]
