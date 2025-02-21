@@ -69,7 +69,7 @@ export const RegisterPage = () => {
 
                     if (result.ok) {
                         window.open(
-                            import.meta.env.VITE_ZADVIZH_LINK,
+                            (await result.json()).inviteLink,
                             '_blank',
                             'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
                         );
@@ -227,6 +227,10 @@ export const RegisterPage = () => {
                                         <>
                                             <Radio value="front">Frontend</Radio>
                                             <Radio value="back">Backend</Radio>
+                                            <Radio value="full">Fullstack</Radio>
+                                            <Radio value="qa">QA</Radio>
+                                            <Radio value="game-dev">Game Dev</Radio>
+                                            <Radio value="mobile">Mobile Dev</Radio>
                                             <Radio value="ml">Machine Learning</Radio>
                                             <Radio value="design">UI/UX</Radio>
                                         </>
@@ -236,7 +240,7 @@ export const RegisterPage = () => {
                                             <Radio value="pwn">PWN</Radio>
                                             <Radio value="froensic">Форензика</Radio>
                                             <Radio value="admin">Администрирование</Radio>
-                                            <Radio value="crypto">Криптографию</Radio>
+                                            <Radio value="crypto">Криптография</Radio>
                                             <Radio value="stegano">Стеганография</Radio>
                                             <Radio value="osint">OSINT</Radio>
                                             <Radio value="joy">Игрушки</Radio>
