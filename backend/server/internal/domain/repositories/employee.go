@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -89,19 +88,18 @@ func (eRepo *EmployeeRepositoryImpl) GetAllTeamNames(field string) (teamNames []
 }
 
 func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmployee) (httpCode int, repoError error, inviteLink string) {
-	//refTgIdByte, _ := base64.StdEncoding.DecodeString(authEmployee.Ref)
-	//refTgId := strings.Split(string(refTgIdByte), ":")[1]
-	//authEmployee.Ref = refTgId
+	refTgIdByte, _ := base64.StdEncoding.DecodeString(authEmployee.Ref)
+	refTgId := strings.Split(string(refTgIdByte), ":")[1]
+	authEmployee.Ref = refTgId
 
-	var insertEmp bson.M
-	mongoErr := eRepo.mongoDB.Collection("employees").
-		FindOne(ctx, bson.D{{"tgid", authEmployee.TgId}}).Decode(&insertEmp)
-
-	if !errors.Is(mongoErr, mongo.ErrNoDocuments) {
-		return http.StatusInternalServerError, fmt.Errorf("Данный пользователь уже зарегистрирован"), inviteLink
+	count, _ := eRepo.mongoDB.Collection("employees").
+		CountDocuments(ctx, bson.D{{"tgid", authEmployee.TgId}})
+	if count > 0 {
+		repoError = fmt.Errorf("%s", "Пользователь уже зарегистрирован")
+		return http.StatusBadRequest, repoError, inviteLink
 	}
 
-	_, mongoErr = eRepo.mongoDB.Collection("employees").
+	_, mongoErr := eRepo.mongoDB.Collection("employees").
 		InsertOne(ctx, authEmployee)
 	if mongoErr != nil {
 		repoError = fmt.Errorf("Ошибка добавления нового участника: %s", mongoErr.Error())
