@@ -40,20 +40,24 @@ func (tRepo *TeacherRepositoryImpl) LikeDislike(likeDislike request.LikeDislike)
 
 	switch likeDislike.Action {
 	case "like":
-		if !utils.Contains(teacher.Likes.Authors, author.ID) {
-			teacher.Likes.Value += 1
-			teacher.Likes.Authors = append(teacher.Likes.Authors, author.ID)
-		} else {
-			teacher.Likes.Value -= 1
-			teacher.Likes.Authors = utils.RemoveElement(author.ID, teacher.Likes.Authors)
+		if !(utils.Contains(teacher.Dislikes.Authors, author.ID)) {
+			if !utils.Contains(teacher.Likes.Authors, author.ID) {
+				teacher.Likes.Value += 1
+				teacher.Likes.Authors = append(teacher.Likes.Authors, author.ID)
+			} else {
+				teacher.Likes.Value -= 1
+				teacher.Likes.Authors = utils.RemoveElement(author.ID, teacher.Likes.Authors)
+			}
 		}
 	case "dislike":
-		if !utils.Contains(teacher.Dislikes.Authors, author.ID) {
-			teacher.Dislikes.Value += 1
-			teacher.Dislikes.Authors = append(teacher.Dislikes.Authors, author.ID)
-		} else {
-			teacher.Dislikes.Value -= 1
-			teacher.Dislikes.Authors = utils.RemoveElement(author.ID, teacher.Dislikes.Authors)
+		if !utils.Contains(teacher.Likes.Authors, author.ID) {
+			if !utils.Contains(teacher.Dislikes.Authors, author.ID) {
+				teacher.Dislikes.Value += 1
+				teacher.Dislikes.Authors = append(teacher.Dislikes.Authors, author.ID)
+			} else {
+				teacher.Dislikes.Value -= 1
+				teacher.Dislikes.Authors = utils.RemoveElement(author.ID, teacher.Dislikes.Authors)
+			}
 		}
 	}
 
