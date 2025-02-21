@@ -11,7 +11,7 @@ type Teacher struct {
 	Middlename string        `bson:"middlename" json:"middlename"`
 	Lastname   string        `bson:"lastname" json:"lastname"`
 
-	Likes    dto.Like      `bson:"likes" json:"likes"`
-	Dislikes dto.Dislike   `bson:"dislikes" json:"dislikes"`
-	Comments []dto.Comment `bson:"comments,omitempty" json:"comments"`
+	Likes    dto.Like        `bson:"likes" json:"likes"`
+	Dislikes dto.Dislike     `bson:"dislikes" json:"dislikes"`
+	Comments []bson.ObjectID `bson:"comments,omitempty" json:"comments"`
 }

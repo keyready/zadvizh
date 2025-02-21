@@ -1,5 +1,15 @@
 [
   {
+    "firstname": "Денис",
+    "lastname": "Бирюков",
+    "middlename": "Николаевич"
+  },
+  {
+    "firstname": "Андрей",
+    "lastname": "Дудкин",
+    "middlename": "Сергеевич"
+  },
+  {
     "firstname": "Дмитрий",
     "lastname": "Нагибин",
     "middlename": "Владимирович"
@@ -58,5 +68,40 @@
     "firstname": "Павел",
     "lastname": "Глыбовский",
     "middlename": "Анатольевич"
+  },
+  {
+  "firstname": "Алексей",
+  "lastname": "Киселев",
+  "middlename": "Николаевич"
+  },
+  {
+    "firstname": "Андрей",
+    "lastname": "Домбровский",
+    "middlename": "Федорович"
+  },
+  {
+    "firstname": "Андрей",
+    "lastname": "Каливанов",
+    "middlename": "Жоржевич"
+  },
+  {
+    "firstname": "Артем",
+    "lastname": "Менисов",
+    "middlename": "Бакытджанович"
+  },
+  {
+    "firstname": "Дарья",
+    "lastname": "Андрушкевич",
+    "middlename": "Владимировна"
+  },
+  {
+    "firstname": "Сергей",
+    "lastname": "Андрушкевич",
+    "middlename": "Станиславович"
+  },
+  {
+    "firstname": "Вячеслав",
+    "lastname": "Тельбух",
+    "middlename": "Владимирович"
   }
 ]

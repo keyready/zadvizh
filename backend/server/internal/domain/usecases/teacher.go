@@ -2,14 +2,15 @@ package usecases
 
 import (
 	"server/internal/domain/repositories"
-	"server/internal/domain/types/models"
 	"server/internal/domain/types/request"
+	"server/internal/domain/types/response"
 )
 
 type TeacherUsecase interface {
-	GetAllTeachers() (httpCode int, usecaseError error, teachers []models.Teacher)
+	GetAllTeachers() (httpCode int, usecaseError error, teachers []response.Teacher)
 	WriteComment(newComment request.WriteNewComment) (httpCode int, usecaseErr error)
 	LikeDislike(likeDislike request.LikeDislike) (httpCode int, usecaseErr error)
+	LikeDislikeComment(likeDislike request.LikeDislikeComment) (httpCode int, usecaseErr error)
 }
 
 type TeacherUsecaseImpl struct {
@@ -18,6 +19,14 @@ type TeacherUsecaseImpl struct {
 
 func NewTeacherRepostoryImpl(teacherRepo repositories.TeacherRepository) *TeacherUsecaseImpl {
 	return &TeacherUsecaseImpl{teacherRepo: teacherRepo}
+}
+
+func (tUsecase *TeacherUsecaseImpl) LikeDislikeComment(likeDislike request.LikeDislikeComment) (httpCode int, usecaseErr error) {
+	httpCode, usecaseErr = tUsecase.teacherRepo.LikeDislikeComment(likeDislike)
+	if usecaseErr != nil {
+		return httpCode, usecaseErr
+	}
+	return httpCode, nil
 }
 
 func (tUsecase *TeacherUsecaseImpl) LikeDislike(likeDislike request.LikeDislike) (httpCode int, usecaseErr error) {
@@ -36,7 +45,7 @@ func (tUsecase *TeacherUsecaseImpl) WriteComment(newComment request.WriteNewComm
 	return httpCode, nil
 }
 
-func (tUsecase *TeacherUsecaseImpl) GetAllTeachers() (httpCode int, usecaseError error, teachers []models.Teacher) {
+func (tUsecase *TeacherUsecaseImpl) GetAllTeachers() (httpCode int, usecaseError error, teachers []response.Teacher) {
 	httpCode, usecaseError, teachers = tUsecase.teacherRepo.GetAllTeachers()
 	if usecaseError != nil {
 		return httpCode, usecaseError, nil

@@ -123,11 +123,11 @@ func (b *Bot) Run() {
 
 					authorId := strconv.Itoa(int(update.Message.From.ID))
 
-					_, _ = mongoClient.Database("zadvizh").
+					_ = mongoClient.Database("zadvizh").
 						Collection("employees").
-						UpdateOne(context.Background(),
+						FindOneAndUpdate(context.Background(),
 							bson.D{{"tgid", authorId}},
-							bson.D{{"$set", bson.D{{"tgInviteLink", responseApi["invite_link"].(string)}}}},
+							bson.D{{"tgInviteLink", responseApi["invite_link"].(string)}},
 						)
 
 					bodyRef := "author:" + authorId

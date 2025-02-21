@@ -15,6 +15,27 @@ func NewTeacherControllers(teacherUsecase usecases.TeacherUsecase) *TeacherContr
 	return &TeacherController{teacherUsecase: teacherUsecase}
 }
 
+func (tContr *TeacherController) LikeDislikeComment(ctx *gin.Context) {
+	var likeDislike request.LikeDislikeComment
+	authorId, _ := ctx.Get("tgId")
+
+	likeDislike.AuthorID = authorId.(string)
+
+	bindErr := ctx.ShouldBindJSON(&likeDislike)
+	if bindErr != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": bindErr.Error()})
+		return
+	}
+
+	httpCode, contrErr := tContr.teacherUsecase.LikeDislikeComment(likeDislike)
+	if contrErr != nil {
+		ctx.AbortWithStatusJSON(httpCode, gin.H{"error": contrErr.Error()})
+		return
+	}
+
+	ctx.JSON(httpCode, gin.H{})
+}
+
 func (tContr *TeacherController) LikeDislike(ctx *gin.Context) {
 	var likeDislike request.LikeDislike
 	authorId, _ := ctx.Get("tgId")

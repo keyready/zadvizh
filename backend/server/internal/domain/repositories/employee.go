@@ -114,12 +114,12 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	_ = eRepo.mongoDB.Collection("employees").FindOne(ctx, bson.D{{"tgid", authEmployee.Ref}}).Decode(&a)
 
 	inviteLink = a.TgInviteLink
-	_, _ = eRepo.mongoDB.Collection("employees").
-		UpdateOne(ctx,
-			bson.D{{"tgid", authEmployee.Ref}},
-			bson.D{{"$set", bson.D{
-				{"tgInviteLink", ""}}}},
-		)
+	//_, _ = eRepo.mongoDB.Collection("employees").
+	//	UpdateOne(ctx,
+	//		bson.D{{"tgid", authEmployee.Ref}},
+	//		bson.D{{"$set", bson.D{
+	//			{"tgInviteLink", ""}}}},
+	//	)
 
 	return http.StatusOK, nil, inviteLink
 }

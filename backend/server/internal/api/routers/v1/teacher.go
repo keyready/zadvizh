@@ -10,4 +10,5 @@ func NewTeacherRouters(tContr *controllers.TeacherController, router *gin.Engine
 	router.GET("/api/v1/teachers", middleware.TokenMiddleware(), tContr.GetAllTeachers)
 	router.POST("/api/v1/teachers/addComment", middleware.TokenMiddleware(), tContr.WriteComment)
 	router.POST("/api/v1/teachers/like", middleware.TokenMiddleware(), tContr.LikeDislike)
+	router.POST("/api/v1/teachers/likeComment", middleware.TokenMiddleware(), tContr.LikeDislikeComment)
 }

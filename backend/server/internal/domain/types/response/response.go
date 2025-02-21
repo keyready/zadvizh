@@ -21,3 +21,8 @@ type Token struct {
 	ID          bson.ObjectID `json:"id"`
 	AccessToken string        `json:"accessToken"`
 }
+
+type Teacher struct {
+	models.Teacher
+	Comments []models.Comment `json:"comments"`
+}
