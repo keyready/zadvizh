@@ -34,7 +34,7 @@ export const TeacherCard = (props: TeacherCardProps) => {
         setIsLoading(true);
 
         try {
-            await fetch('https://zadvizh.tech/api/v1/teacher/likes', {
+            await fetch('https://zadvizh.tech/api/v1/teachers/like', {
                 method: 'post',
                 body: JSON.stringify({ teacherId: teacher.id, action: 'like' }),
                 headers: {
@@ -53,7 +53,7 @@ export const TeacherCard = (props: TeacherCardProps) => {
         setIsLoading(true);
 
         try {
-            await fetch('https://zadvizh.tech/api/v1/teacher/likes', {
+            await fetch('https://zadvizh.tech/api/v1/teachers/like', {
                 method: 'post',
                 body: JSON.stringify({ teacherId: teacher.id, action: 'dislike' }),
                 headers: {
