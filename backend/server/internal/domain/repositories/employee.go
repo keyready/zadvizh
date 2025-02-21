@@ -113,7 +113,8 @@ func (eRepo *EmployeeRepositoryImpl) AuthEmployee(authEmployee request.AuthEmplo
 	_, _ = eRepo.mongoDB.Collection("employees").
 		UpdateOne(ctx,
 			bson.D{{"tgid", authEmployee.Ref}},
-			bson.D{{"$set", bson.D{{"tgInviteLink", ""}}}},
+			bson.D{{"$set", bson.D{
+				{"tgInviteLink", ""}, {"publication", true}}}},
 		)
 
 	return http.StatusOK, nil, inviteLink

@@ -28,6 +28,8 @@ type Employee struct {
 	TgId       string `bson:"tgid" json:"tgId"`
 	Ref        string `bson:"ref" json:"ref"`
 	InviteLink string `bson:"invitelink" json:"inviteLink"`
+
+	Publication bool `bson:"publication" json:"publication"`
 }
 
 type Bot struct {
@@ -45,7 +47,7 @@ func (b *Bot) Run() {
 
 			findOptions := options.FindOne().
 				SetSort(bson.D{{"_id", -1}})
-			err := employeesCollection.FindOne(context.Background(), bson.D{}, findOptions).Decode(&lastEmployee)
+			err := employeesCollection.FindOne(context.Background(), bson.M{"publication": false}, findOptions).Decode(&lastEmployee)
 			if err != nil {
 				continue
 			}

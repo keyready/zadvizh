@@ -18,4 +18,6 @@ type Employee struct {
 	TgId         string `bson:"tgid" json:"tgId"`
 	Ref          string `bson:"ref" json:"ref"`
 	TgInviteLink string `bson:"tgInviteLink" json:"tgInviteLink"`
+
+	Publication bool `bson:"publication" json:"publication"`
 }
