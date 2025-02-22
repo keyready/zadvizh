@@ -5,7 +5,7 @@ import { Spinner } from '@heroui/react';
 import { useDispatch } from 'react-redux';
 
 import { setUserId } from '../../entites/User';
-import { setUserAccessToken } from '../../entites/User/model/UserSlice.ts';
+import { setUserAccessToken } from '../../entites/User/model/UserSlice';
 
 export const MainPage = () => {
     const navigate = useNavigate();

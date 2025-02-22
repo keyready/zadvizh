@@ -1,6 +1,6 @@
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
-import { Progress, Radio, RadioGroup } from '@heroui/react';
+import { addToast, Progress, Radio, RadioGroup } from '@heroui/react';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Navigate } from 'react-router';
@@ -74,13 +74,7 @@ export const RegisterPage = () => {
                         },
                     });
 
-                    if (result.ok) {
-                        window.open(
-                            (await result.json()).inviteLink,
-                            '_blank',
-                            'width=800,height=600,left=350,top=120,resizable=no,scrollbars=no,status=yes',
-                        );
-                    }
+                    const inviteLink = (await result.json()).inviteLink;
 
                     const accessResult = await fetch(
                         `https://zadvizh.tech/api/v1/get_access?tgId=${newUserForm.tgId}`,
@@ -93,6 +87,24 @@ export const RegisterPage = () => {
                     const responseData = await accessResult.json();
                     dispatch(setUserId(responseData.id));
                     dispatch(setUserAccessToken(responseData.accessToken));
+                    addToast({
+                        classNames: {
+                            base: 'flex flex-col gap-2',
+                        },
+                        color: 'success',
+                        title: 'Группа в Telegram',
+                        description: 'Для получения приглашения в группу нажмите кнопку ниже',
+                        endContent: (
+                            <Button
+                                variant="bordered"
+                                color="success"
+                                className="w-full"
+                                onPress={() => window.open(inviteLink, '_blank')}
+                            >
+                                Вы приглашены в ZaДвиж
+                            </Button>
+                        ),
+                    });
                     navigate('/hierarchy');
                 } catch (e) {
                     alert(e);
