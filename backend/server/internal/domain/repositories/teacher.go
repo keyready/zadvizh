@@ -141,22 +141,19 @@ func (tRepo *TeacherRepositoryImpl) GetAllTeachers() (httpCode int, repoErr erro
 
 	pipeline := mongo.Pipeline{
 		bson.D{
-			{
-				"$lookup", bson.D{
-					{"from", "comments"},
-					{"localField", "comments"},
-					{"foreignField", "_id"},
-					{"as", "comments"},
-				},
-			},
+			{"$lookup", bson.D{
+				{"from", "comments"},
+				{"localField", "comments"},
+				{"foreignField", "_id"},
+				{"as", "comments"},
+			}},
 		},
 	}
 
-	cur, mongoErr := tCollection.Aggregate(context.Background(), pipeline)
-	defer cur.Close(context.Background())
-
-	if mongoErr != nil {
-		return http.StatusInternalServerError, mongoErr, nil
+	cur, err := tCollection.Aggregate(context.Background(), pipeline)
+	defer cur.Close(ctx)
+	if err != nil {
+		log.Fatalf(err.Error())
 	}
 
 	for cur.Next(ctx) {

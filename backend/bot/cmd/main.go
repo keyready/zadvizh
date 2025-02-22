@@ -124,21 +124,13 @@ func (b *Bot) Run() {
 					authorId := strconv.Itoa(int(update.Message.From.ID))
 
 					var a Employee
-					err = mongoClient.Database("zadvizh").Collection("employees").
+					_ = mongoClient.Database("zadvizh").Collection("employees").
 						FindOne(context.TODO(), bson.M{"tgid": authorId}).Decode(&a)
-					if err != nil {
-						log.Fatalf(err.Error())
-					}
 
 					a.TgInviteLink = responseApi["invite_link"].(string)
 
-					res, replaceErr := mongoClient.Database("zadvizh").Collection("employees").
+					_, _ = mongoClient.Database("zadvizh").Collection("employees").
 						ReplaceOne(context.TODO(), bson.M{"tgid": authorId}, &a)
-					if replaceErr != nil {
-						log.Fatalf(replaceErr.Error())
-					} else {
-						log.Println(res.UpsertedID)
-					}
 
 					bodyRef := "author:" + authorId
 					ref := base64.StdEncoding.EncodeToString([]byte(bodyRef))
