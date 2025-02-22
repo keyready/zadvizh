@@ -26,9 +26,9 @@ type Employee struct {
 	TeamRole   string        `bson:"teamrole" json:"teamRole"`
 	Scidir     string        `bson:"scidir" json:"scidir"`
 
-	TgId       string `bson:"tgid" json:"tgId"`
-	Ref        string `bson:"ref" json:"ref"`
-	InviteLink string `bson:"invitelink" json:"inviteLink"`
+	TgId         string `bson:"tgid" json:"tgId"`
+	Ref          string `bson:"ref" json:"ref"`
+	TgInviteLink string `bson:"tgInviteLink" json:"tgInviteLink"`
 
 	Publication bool `bson:"publication" json:"publication"`
 }
@@ -123,7 +123,7 @@ func (b *Bot) Run() {
 
 					authorId := strconv.Itoa(int(update.Message.From.ID))
 
-					fmt.Printf("ИНВАЙТ-ЛИНК: %s", responseApi["invite_link"].(string))
+					log.Printf("ИНВАЙТ-ЛИНК: %s", responseApi["invite_link"].(string))
 					var tmp Employee
 					res := mongoClient.Database("zadvizh").
 						Collection("employees").
@@ -133,8 +133,8 @@ func (b *Bot) Run() {
 						)
 
 					_ = res.Decode(&tmp)
-					fmt.Printf("ВЛАДЕЛЕЦ ТГ-ЛИНКИ:")
-					fmt.Print(tmp)
+					log.Printf("ВЛАДЕЛЕЦ ТГ-ЛИНКИ:")
+					log.Print(tmp)
 
 					bodyRef := "author:" + authorId
 					ref := base64.StdEncoding.EncodeToString([]byte(bodyRef))
@@ -216,6 +216,8 @@ func main() {
 	myBot := &Bot{
 		Bot: bot,
 	}
+
+	log.Printf("Бот %s запущен", myBot.Bot.Self.UserName)
 
 	myBot.Run()
 }
