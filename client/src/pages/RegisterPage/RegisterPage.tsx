@@ -87,8 +87,10 @@ export const RegisterPage = () => {
                     const responseData = await accessResult.json();
                     dispatch(setUserId(responseData.id));
                     dispatch(setUserAccessToken(responseData.accessToken));
+
                     addToast({
                         classNames: {
+                            wrapper: 'z-50',
                             base: 'flex flex-col gap-2',
                         },
                         color: 'success',
@@ -105,6 +107,7 @@ export const RegisterPage = () => {
                             </Button>
                         ),
                     });
+
                     navigate('/hierarchy');
                 } catch (e) {
                     alert(e);

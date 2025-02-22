@@ -14,7 +14,7 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Provider store={store}>
             <HeroUIProvider>
-                <ToastProvider placement="top-center" />
+                <ToastProvider placement="bottom-center" />
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
