@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"log"
 	"net/http"
 	"server/internal/domain/types/models"
 	"server/internal/domain/types/request"
@@ -152,16 +153,18 @@ func (tRepo *TeacherRepositoryImpl) GetAllTeachers() (httpCode int, repoErr erro
 	}
 
 	cur, mongoErr := tCollection.Aggregate(context.Background(), pipeline)
-	defer cur.Close(ctx)
+	defer cur.Close(context.Background())
 
 	if mongoErr != nil {
-		repoErr = fmt.Errorf("Ошибка pipeline: %s", mongoErr.Error())
-		return http.StatusInternalServerError, repoErr, nil
+		return http.StatusInternalServerError, mongoErr, nil
 	}
 
 	for cur.Next(ctx) {
 		var t response.Teacher
-		_ = cur.Decode(&t)
+		e := cur.Decode(&t)
+		if e != nil {
+			log.Fatalf(e.Error())
+		}
 		teachers = append(teachers, t)
 	}
 
