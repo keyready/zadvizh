@@ -79,7 +79,7 @@ func GetMongoClient() (*mongo.Client, error) {
 
 		for _, t := range teachers {
 			t.ID = bson.NewObjectID()
-			t.Comments = []dto.Comment{}
+			t.Comments = []bson.ObjectID{}
 			t.Likes = dto.Like{
 				Authors: []bson.ObjectID{},
 			}

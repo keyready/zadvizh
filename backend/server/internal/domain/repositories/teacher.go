@@ -136,36 +136,32 @@ func (tRepo *TeacherRepositoryImpl) WriteComment(newComment request.WriteNewComm
 }
 
 func (tRepo *TeacherRepositoryImpl) GetAllTeachers() (httpCode int, repoErr error, teachers []response.Teacher) {
-	cur, mongoErr := tRepo.mongoDB.Collection("teachers").
-		Find(ctx, bson.D{})
+	tCollection := tRepo.mongoDB.Collection("teachers")
+
+	pipeline := mongo.Pipeline{
+		bson.D{
+			{
+				"$lookup", bson.D{
+					{"from", "comments"},
+					{"localField", "comments"},
+					{"foreignField", "_id"},
+					{"as", "comments"},
+				},
+			},
+		},
+	}
+
+	cur, mongoErr := tCollection.Aggregate(context.Background(), pipeline)
 	defer cur.Close(ctx)
 
 	if mongoErr != nil {
-		repoErr = fmt.Errorf("Ошибка извлечения всех преподавателей: %s", mongoErr.Error())
+		repoErr = fmt.Errorf("Ошибка pipeline: %s", mongoErr.Error())
 		return http.StatusInternalServerError, repoErr, nil
 	}
 
 	for cur.Next(ctx) {
 		var t response.Teacher
-		decodeErr := cur.Decode(&t)
-		if decodeErr != nil {
-			repoErr = fmt.Errorf("Ошибка анмаршалинга препода: %s", decodeErr.Error())
-			return http.StatusInternalServerError, repoErr, nil
-		}
-
-		cursor, _ := tRepo.mongoDB.Collection("comments").Find(ctx,
-			bson.M{"_id": bson.M{"$in": t.Comments}})
-		defer cursor.Close(ctx)
-
-		var comments []models.Comment
-		for cursor.Next(ctx) {
-			var comment models.Comment
-			_ = cursor.Decode(&comment)
-			comments = append(comments, comment)
-		}
-
-		t.Comments = comments
-
+		_ = cur.Decode(&t)
 		teachers = append(teachers, t)
 	}
 
